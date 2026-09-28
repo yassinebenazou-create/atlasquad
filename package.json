@@ -12,7 +12,9 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^7.3.5"
+    "@lucide/astro": "^1.48.0",
+    "astro": "^7.3.5",
+    "simple-icons": "^16.33.0"
   },
   "allowScripts": {
     "esbuild": true

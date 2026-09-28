@@ -1,0 +1,33 @@
+---
+import { contact } from '../data/tours';
+import type { Tour } from '../data/tours';
+
+type Props = { tour?: Tour; dark?: boolean };
+const { tour, dark = false } = Astro.props;
+const message = encodeURIComponent(`Hello Atlas Quad Palmeraie, I would like to ask about availability${tour ? ` for ${tour.title}` : ''}.`);
+---
+
+<section class:list={['availability', { dark }]} aria-labelledby="availability-title">
+  <p class="eyebrow">Plan your activity</p>
+  <h2 id="availability-title">Check availability</h2>
+  {tour && <p class="price">{tour.priceLabel}</p>}
+  <div class="fields">
+    <label>Date<input type="date" name="date" /></label>
+    <label>Guests<select name="guests"><option>1 guest</option><option>2 guests</option><option>3 guests</option><option>4+ guests</option></select></label>
+  </div>
+  <a class="button" href={`${contact.whatsappHref}?text=${message}`} target="_blank" rel="noreferrer">Request availability</a>
+  <p class="notice">This opens WhatsApp. Your activity is only arranged after the team confirms availability and details with you.</p>
+</section>
+
+<style>
+  .availability { padding: clamp(1.4rem,3vw,2rem); border: 1px solid var(--line); border-radius: var(--radius); background: #fff; box-shadow: var(--shadow); }
+  .availability.dark { border: 0; background: var(--navy); color: #fff; }
+  h2 { margin: .55rem 0; font-family: Georgia, 'Times New Roman', serif; font-size: clamp(1.8rem,4vw,2.5rem); }
+  .price { margin: .35rem 0 1.25rem; color: var(--orange); font-weight: 900; }
+  .fields { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin: 1rem 0; }
+  label { display: grid; gap: .4rem; font-size: .76rem; font-weight: 900; text-transform: uppercase; }
+  input, select { width: 100%; min-height: 3.1rem; padding: .7rem; border: 1px solid #cfd5df; border-radius: 4px; background: #fff; color: var(--ink); }
+  .button { width: 100%; }
+  .notice { margin: .85rem 0 0; color: inherit; opacity: .72; font-size: .78rem; line-height: 1.5; }
+  @media (max-width: 420px) { .fields { grid-template-columns: 1fr; } }
+</style>

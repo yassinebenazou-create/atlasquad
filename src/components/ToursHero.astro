@@ -1,0 +1,143 @@
+<section class="tours-hero" aria-labelledby="tours-heading">
+  <img
+    src="/images/tours/tours-hero-marrakech.jpg"
+    alt="Quad bike riders exploring Marrakech Palmeraie at sunset"
+    fetchpriority="high"
+    data-hero-image
+  />
+  <div class="tours-hero__shade"></div>
+  <div class="tours-hero__inner">
+    <p class="tours-hero__eyebrow" data-reveal="left" style="--delay: 80ms">Explore Marrakech <span aria-hidden="true"></span></p>
+    <h1 id="tours-heading" data-reveal="up" style="--delay: 160ms">Find your next <strong>experience</strong></h1>
+    <p data-reveal="up" style="--delay: 240ms">Ride through palm groves, cross desert trails and discover the authentic<br class="desktop-break" /> beauty of Marrakech with Atlas Quad Palmeraie.</p>
+  </div>
+</section>
+
+<style>
+  .tours-hero {
+    position: relative;
+    min-height: 260px;
+    overflow: hidden;
+    isolation: isolate;
+    background: #62422d;
+    color: #fff;
+  }
+
+  .tours-hero > img {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 54%;
+  }
+
+  .tours-hero__shade {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(90deg, rgba(7, 16, 27, .78) 0%, rgba(7, 16, 27, .48) 47%, rgba(7, 16, 27, .08) 78%);
+  }
+
+  .tours-hero__inner {
+    width: min(94vw, 1440px);
+    margin-inline: auto;
+    padding-top: 67px;
+  }
+
+  .tours-hero__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    margin: 0 0 8px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .26em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .tours-hero__eyebrow span {
+    width: 34px;
+    height: 2px;
+    background: #ff5b0a;
+  }
+
+  h1 {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(52px, 4vw, 64px);
+    line-height: 1;
+    letter-spacing: 0;
+  }
+
+  h1 strong {
+    color: #ff5b0a;
+    font-weight: inherit;
+  }
+
+  .tours-hero__inner > p:last-child {
+    margin: 10px 0 0;
+    font-size: 17px;
+    line-height: 1.35;
+  }
+
+  @media (max-width: 899px) {
+    .tours-hero {
+      min-height: 230px;
+    }
+
+    .tours-hero > img {
+      object-position: 58% center;
+    }
+
+    .tours-hero__shade {
+      background: linear-gradient(90deg, rgba(7, 16, 27, .84), rgba(7, 16, 27, .35));
+    }
+
+    .tours-hero__inner {
+      width: min(calc(100% - 2rem), 720px);
+      padding-top: 52px;
+    }
+
+    h1 {
+      max-width: 350px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(40px, 7vw, 52px);
+    }
+
+    .tours-hero__inner > p:last-child {
+      max-width: 380px;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .desktop-break {
+      display: none;
+    }
+  }
+
+  @media (max-width: 639px) {
+    .tours-hero {
+      min-height: 220px;
+    }
+
+    .tours-hero__inner {
+      width: calc(100% - 2rem);
+      padding-top: 40px;
+    }
+
+    .tours-hero__eyebrow {
+      font-size: 11px;
+    }
+
+    h1 {
+      font-size: clamp(36px, 11vw, 44px);
+    }
+
+    .tours-hero__inner > p:last-child {
+      font-size: 13px;
+    }
+  }
+</style>

@@ -1,0 +1,101 @@
+---
+import { CircleCheck, CircleX } from '@lucide/astro';
+import type { Tour } from '../data/tours';
+
+type Props = { tour: Tour };
+const { tour } = Astro.props;
+---
+
+{(tour.included?.length || tour.excluded?.length) && (
+  <section class="included-excluded" aria-label="Included and excluded">
+    <div class="list-card included">
+      <h2><CircleCheck size={27} fill="currentColor" /> Included</h2>
+      <ul>
+        {tour.included?.map((item) => <li><CircleCheck size={17} fill="currentColor" /><span>{item}</span></li>)}
+      </ul>
+    </div>
+    <div class="list-card excluded">
+      <h2><CircleX size={27} fill="currentColor" /> Excluded</h2>
+      <ul>
+        {tour.excluded?.map((item) => <li><CircleX size={17} fill="currentColor" /><span>{item}</span></li>)}
+      </ul>
+    </div>
+  </section>
+)}
+
+<style>
+  .included-excluded {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(240px, .65fr);
+    gap: 16px;
+  }
+
+  .list-card {
+    padding: 22px 24px;
+    border-radius: 8px;
+  }
+
+  .included {
+    color: #079447;
+    background: linear-gradient(135deg, #edf9f2, #f7fcf9);
+  }
+
+  .excluded {
+    color: #ee3434;
+    background: linear-gradient(135deg, #fff0f0, #fff8f8);
+  }
+
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0 0 14px;
+    color: #071b46;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 24px;
+  }
+
+  h2 :global(svg) {
+    flex: 0 0 auto;
+    stroke: #fff;
+  }
+
+  .included h2 :global(svg),
+  .included li :global(svg) {
+    color: #079447;
+  }
+
+  .excluded h2 :global(svg),
+  .excluded li :global(svg) {
+    color: #ee3434;
+  }
+
+  ul {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr);
+    gap: 9px;
+    align-items: start;
+    color: #46566b;
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  li :global(svg) {
+    margin-top: 1px;
+    stroke: #fff;
+  }
+
+  @media (max-width: 700px) {
+    .included-excluded {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

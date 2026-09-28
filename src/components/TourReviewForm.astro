@@ -1,0 +1,267 @@
+---
+import { Send, Star } from '@lucide/astro';
+import { contact } from '../data/tours';
+import type { Tour } from '../data/tours';
+
+type Props = { tour: Tour };
+const { tour } = Astro.props;
+const criteria = ['Location', 'Experience', 'Guide', 'Value for Money', 'Overall'];
+---
+
+<section class="review-section" aria-labelledby="reviews-heading">
+  <div class="review-heading">
+    <div>
+      <h2 id="reviews-heading">Reviews</h2>
+      <p>Share your experience with us!</p>
+    </div>
+    <div class="heading-stars" aria-hidden="true">
+      {Array.from({ length: 5 }, () => <Star size={23} fill="currentColor" />)}
+    </div>
+  </div>
+
+  <form class="review-form" data-review-form data-tour={tour.title} data-email={contact.email}>
+    <div class="review-fields">
+      <div class="identity-fields">
+        <label><span>Your Name *</span><input type="text" name="name" required /></label>
+        <label><span>Email Address *</span><input type="email" name="email" required /></label>
+        <label><span>Your Website</span><input type="url" name="website" /></label>
+      </div>
+      <label class="comment-field"><span>Your Comment *</span><textarea name="comment" required></textarea></label>
+    </div>
+
+    <div class="rating-panel">
+      {criteria.map((criterion) => (
+        <div class="rating-row">
+          <span>{criterion}</span>
+          <div class="rating-buttons" role="group" aria-label={`${criterion} rating`} data-rating-group>
+            <input type="hidden" name={`rating-${criterion.toLowerCase().replaceAll(' ', '-')}`} value="" />
+            {Array.from({ length: 5 }, (_, index) => (
+              <button type="button" data-rating={index + 1} aria-label={`${index + 1} star${index ? 's' : ''}`}>
+                <Star size={20} />
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="review-actions">
+      <button class="submit-review" type="submit"><Send size={17} /> Submit Review</button>
+      <p>Your email address will not be published. Required fields are marked *</p>
+    </div>
+  </form>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-rating-group]').forEach((group) => {
+    const input = group.querySelector<HTMLInputElement>('input');
+    const buttons = Array.from(group.querySelectorAll<HTMLButtonElement>('button'));
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const rating = Number(button.dataset.rating);
+        if (input) input.value = String(rating);
+        buttons.forEach((item) => {
+          const active = Number(item.dataset.rating) <= rating;
+          item.classList.toggle('active', active);
+          item.setAttribute('aria-pressed', String(active));
+        });
+      });
+    });
+  });
+
+  document.querySelectorAll<HTMLFormElement>('[data-review-form]').forEach((form) => {
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (!form.reportValidity()) return;
+      const data = new FormData(form);
+      const ratings = Array.from(data.entries())
+        .filter(([key, value]) => key.startsWith('rating-') && value)
+        .map(([key, value]) => `${key.replace('rating-', '').replaceAll('-', ' ')}: ${value}/5`)
+        .join('\n');
+      const body = [
+        `Tour: ${form.dataset.tour}`,
+        `Name: ${data.get('name')}`,
+        `Email: ${data.get('email')}`,
+        data.get('website') ? `Website: ${data.get('website')}` : '',
+        ratings,
+        '',
+        String(data.get('comment')),
+      ].filter(Boolean).join('\n');
+      window.location.href = `mailto:${form.dataset.email}?subject=${encodeURIComponent(`Tour review: ${form.dataset.tour}`)}&body=${encodeURIComponent(body)}`;
+    });
+  });
+</script>
+
+<style>
+  .review-section {
+    padding-top: 6px;
+  }
+
+  .review-heading {
+    display: flex;
+    align-items: end;
+    gap: 18px;
+    margin-bottom: 17px;
+  }
+
+  h2 {
+    margin: 0;
+    color: #071b46;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 34px;
+    line-height: 1;
+  }
+
+  .review-heading p {
+    margin: 7px 0 0;
+    color: #667085;
+    font-size: 14px;
+  }
+
+  .heading-stars {
+    display: flex;
+    gap: 3px;
+    padding-bottom: 1px;
+    color: #00a63c;
+  }
+
+  .review-form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 260px;
+    gap: 18px;
+  }
+
+  .identity-fields {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  label,
+  label span {
+    display: grid;
+  }
+
+  label span {
+    margin-bottom: 6px;
+    color: #536176;
+    font-size: 12px;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    border: 1px solid #dfe3e8;
+    border-radius: 5px;
+    background: #fff;
+    color: #071b46;
+  }
+
+  input {
+    height: 44px;
+    padding: 0 12px;
+  }
+
+  textarea {
+    min-height: 138px;
+    padding: 12px;
+    resize: vertical;
+  }
+
+  .comment-field {
+    margin-top: 12px;
+  }
+
+  .rating-panel {
+    align-self: end;
+    padding: 16px;
+    border-radius: 7px;
+    background: #f5f6f8;
+  }
+
+  .rating-row {
+    display: grid;
+    grid-template-columns: minmax(92px, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+    min-height: 30px;
+    color: #536176;
+    font-size: 11px;
+  }
+
+  .rating-buttons {
+    display: flex;
+  }
+
+  .rating-buttons button {
+    width: 24px;
+    height: 27px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #98a2b3;
+    cursor: pointer;
+  }
+
+  .rating-buttons button:hover,
+  .rating-buttons button:focus-visible,
+  .rating-buttons button.active {
+    color: #f5ac00;
+  }
+
+  .rating-buttons button.active :global(svg) {
+    fill: currentColor;
+  }
+
+  .review-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .submit-review {
+    min-height: 46px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 24px;
+    border: 0;
+    border-radius: 5px;
+    background: #ff5b0a;
+    color: #fff;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .review-actions p {
+    margin: 0;
+    color: #667085;
+    font-size: 11px;
+  }
+
+  @media (max-width: 820px) {
+    .review-form {
+      grid-template-columns: 1fr;
+    }
+
+    .rating-panel {
+      width: min(100%, 360px);
+    }
+  }
+
+  @media (max-width: 620px) {
+    .review-heading,
+    .review-actions {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .identity-fields {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

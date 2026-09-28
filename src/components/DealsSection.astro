@@ -1,0 +1,115 @@
+---
+import DealTourCard from './DealTourCard.astro';
+import { featuredDeals } from '../data/tours';
+---
+
+<section id="services" class="deals-section" aria-labelledby="deals-title">
+  <div class="deals-container">
+    <header class="deals-header">
+      <div class="deals-heading">
+        <p class="deals-eyebrow" data-reveal="left"><span data-reveal="left" data-reveal-line></span>Our top tours</p>
+        <h2 id="deals-title" data-reveal="up" style="--delay: 70ms">Deals & Discounts</h2>
+      </div>
+      <div class="deals-note" data-reveal="up" style="--delay: 120ms">
+        <strong>Don't miss</strong>
+        <p>Amazing activities at the best prices</p>
+      </div>
+    </header>
+    <div class="deals-grid">
+      {featuredDeals.map((deal, index) => (
+        <div class="deal-item" data-reveal="scale" style={`--delay: ${index * 80}ms`}>
+          <DealTourCard deal={deal} />
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .deals-section {
+    width: 100%;
+    padding: clamp(3.5rem, 6vw, 5.2rem) 0;
+    background: #fbf9f6;
+  }
+
+  .deals-container {
+    width: min(calc(100% - 2rem), 1200px);
+    margin-inline: auto;
+  }
+
+  .deals-header {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-bottom: 30px;
+  }
+
+  .deals-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    margin: 0 0 8px;
+    color: #ff5b0a;
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .deals-eyebrow span {
+    width: 32px;
+    height: 2px;
+    background: #ff5b0a;
+  }
+
+  .deals-heading h2 {
+    margin: 0;
+    color: #071b46;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(2.35rem, 4vw, 3.6rem);
+    line-height: 1;
+    letter-spacing: 0;
+  }
+
+  .deals-note {
+    padding-bottom: 3px;
+    text-align: right;
+  }
+
+  .deals-note strong {
+    display: block;
+    margin-bottom: 8px;
+    color: #ff5b0a;
+    font-family: 'Brush Script MT', 'Segoe Script', cursive;
+    font-size: clamp(2rem, 3.5vw, 2.9rem);
+    font-weight: 400;
+    line-height: 0.7;
+  }
+
+  .deals-note p {
+    margin: 0;
+    color: #777;
+    font-size: 0.82rem;
+  }
+
+  .deals-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .deal-item {
+    min-width: 0;
+  }
+
+  @media (max-width: 900px) {
+    .deals-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  @media (max-width: 640px) {
+    .deals-header { align-items: start; flex-direction: column; gap: 1.5rem; }
+    .deals-note { text-align: left; }
+    .deals-grid { grid-template-columns: 1fr; }
+  }
+</style>

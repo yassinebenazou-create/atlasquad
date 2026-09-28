@@ -1,0 +1,108 @@
+<section class="contact-hero" aria-labelledby="contact-page-heading">
+  <img
+    src="/images/tours/tours-hero-marrakech.jpg"
+    alt="Quad bike riders travelling through Marrakech Palmeraie at sunset"
+    fetchpriority="high"
+    data-hero-image
+  />
+  <div class="contact-hero__overlay"></div>
+  <div class="contact-hero__inner">
+    <p class="contact-hero__eyebrow" data-reveal="left" style="--delay: 80ms"><span aria-hidden="true"></span> Contact us</p>
+    <h1 id="contact-page-heading" data-reveal="up" style="--delay: 160ms">Get in touch with<br /><strong>Atlas Quad Palmeraie</strong></h1>
+    <p data-reveal="up" style="--delay: 240ms">We're here to help you plan your Marrakech adventure.<br />Contact us for any questions, bookings or special requests.</p>
+  </div>
+</section>
+
+<style>
+  .contact-hero {
+    position: relative;
+    min-height: 250px;
+    overflow: hidden;
+    isolation: isolate;
+    color: #fff;
+    background: #6c4326;
+  }
+
+  .contact-hero > img {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 53%;
+  }
+
+  .contact-hero__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(90deg, rgba(4, 17, 33, .86) 0%, rgba(4, 17, 33, .48) 48%, rgba(4, 17, 33, .08) 78%);
+  }
+
+  .contact-hero__inner {
+    width: min(calc(100% - 32px), 1800px);
+    margin-inline: auto;
+    padding-top: 25px;
+  }
+
+  .contact-hero__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    margin: 0 0 8px;
+    color: #ff641f;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+  }
+
+  .contact-hero__eyebrow span {
+    width: 32px;
+    height: 2px;
+    background: currentColor;
+  }
+
+  h1 {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(42px, 3.4vw, 58px);
+    line-height: .98;
+    letter-spacing: 0;
+  }
+
+  h1 strong {
+    color: #ff641f;
+    font-weight: inherit;
+  }
+
+  .contact-hero__inner > p:last-child {
+    margin: 12px 0 0;
+    font-size: 15px;
+    line-height: 1.35;
+  }
+
+  @media (max-width: 760px) {
+    .contact-hero {
+      min-height: 280px;
+    }
+
+    .contact-hero > img {
+      object-position: 61% center;
+    }
+
+    .contact-hero__inner {
+      padding-top: 48px;
+    }
+
+    h1 {
+      font-size: clamp(37px, 11vw, 48px);
+    }
+
+    .contact-hero__inner > p:last-child {
+      max-width: 350px;
+      font-size: 14px;
+    }
+  }
+</style>

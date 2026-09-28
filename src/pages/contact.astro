@@ -1,0 +1,137 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ContactForm from '../components/ContactForm.astro';
+import ContactHero from '../components/ContactHero.astro';
+import ContactInfoCard from '../components/ContactInfoCard.astro';
+import ContactMap from '../components/ContactMap.astro';
+import GoogleReviews from '../components/GoogleReviews.astro';
+import { contactPage, googleBusiness } from '../data/contact';
+import { contact } from '../data/tours';
+---
+
+<BaseLayout
+  title="Contact Atlas Quad Palmeraie | Marrakech"
+  description="Contact Atlas Quad Palmeraie by phone, WhatsApp or email and find our location in Marrakech Palmeraie."
+  pathname="/contact/"
+>
+  <ContactHero />
+
+  <section class="contact-main" aria-label="Contact Atlas Quad Palmeraie">
+    <div class="contact-layout">
+      <article class="contact-card" aria-labelledby="contact-info-heading" data-reveal="up">
+        <p class="section-label" data-reveal="left"><span aria-hidden="true"></span> Contact information</p>
+        <h2 id="contact-info-heading" data-reveal="up" style="--delay: 70ms">Let's plan your adventure</h2>
+
+        <div class="contact-info-grid">
+          <ContactInfoCard icon="phone" title="Phone" lines={[contact.phone]} href={contact.phoneHref} delay={140} />
+          <ContactInfoCard icon="whatsapp" title="WhatsApp" lines={[contact.phone]} href={contact.whatsappHref} external delay={210} />
+          <ContactInfoCard icon="email" title="Email" lines={[contact.email]} href={contact.emailHref} delay={280} />
+          <ContactInfoCard icon="location" title="Location" lines={contactPage.location} href={googleBusiness.mapsUrl} external delay={350} />
+          <ContactInfoCard icon="hours" title="Opening Hours" lines={contactPage.openingHours} delay={420} />
+        </div>
+
+        <ContactForm />
+      </article>
+
+      <ContactMap />
+    </div>
+  </section>
+
+  <GoogleReviews />
+</BaseLayout>
+
+<style>
+  .contact-main {
+    position: relative;
+    z-index: 3;
+    width: 100%;
+    padding: 0 0 30px;
+    background: linear-gradient(180deg, #fff 0%, #faf8f5 100%);
+  }
+
+  .contact-layout {
+    width: min(calc(100% - 32px), 1800px);
+    margin: -30px auto 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+    align-items: stretch;
+  }
+
+  .contact-card {
+    min-width: 0;
+    padding: 24px;
+    border: 1px solid #e8e8e8;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 12px 32px rgba(8, 43, 79, .09);
+  }
+
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 7px;
+    color: #ff641f;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+  }
+
+  .section-label span {
+    width: 30px;
+    height: 2px;
+    background: currentColor;
+  }
+
+  .contact-card > h2 {
+    margin: 0;
+    color: #082b4f;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(27px, 2vw, 34px);
+    line-height: 1.05;
+  }
+
+  .contact-info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(220px, 1fr));
+    gap: 24px;
+    margin: 20px 0 22px;
+  }
+
+  @media (max-width: 1450px) {
+    .contact-info-grid {
+      grid-template-columns: repeat(2, minmax(220px, 1fr));
+    }
+  }
+
+  @media (max-width: 1250px) {
+    .contact-layout {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
+    }
+  }
+
+  @media (max-width: 900px) {
+    .contact-layout {
+      width: min(calc(100% - 32px), 760px);
+      margin-top: 0;
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .contact-layout {
+      width: calc(100% - 24px);
+    }
+
+    .contact-card {
+      padding: 18px;
+    }
+
+    .contact-info-grid {
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+  }
+</style>

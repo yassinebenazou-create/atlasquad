@@ -1,0 +1,199 @@
+---
+import { ArrowRight, Clock3, Star, Users } from '@lucide/astro';
+import type { TourListingItem } from '../data/tours';
+
+type Props = { tour: TourListingItem };
+const { tour } = Astro.props;
+---
+
+<article class="listing-card">
+  <a class="card-image" href={`/tours/${tour.slug}/`} aria-label={`View ${tour.title}`}>
+    <img src={tour.image} alt={tour.imageAlt} loading="lazy" />
+  </a>
+  <div class="card-body">
+    <h2><a href={`/tours/${tour.slug}/`}>{tour.title}</a></h2>
+    <div class="card-meta">
+      <span><Clock3 size={12} strokeWidth={2.2} aria-hidden="true" />{tour.duration}</span>
+      <span><Users size={12} strokeWidth={2.2} aria-hidden="true" />{tour.audience}</span>
+    </div>
+    <div class="card-stars" aria-label={`${tour.rating} out of 5 stars`}>
+      {Array.from({ length: tour.rating }).map(() => <Star size={12} strokeWidth={1.8} fill="currentColor" aria-hidden="true" />)}
+    </div>
+    <div class="card-footer">
+      <p><span>From</span><strong>{tour.priceLabel}</strong></p>
+      <a href={`/tours/${tour.slug}/`}>Explore <ArrowRight size={13} strokeWidth={2.2} aria-hidden="true" /></a>
+    </div>
+  </div>
+</article>
+
+<style>
+  .listing-card {
+    overflow: hidden;
+    min-width: 0;
+    height: 100%;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 5px 16px rgba(7, 27, 70, .06);
+    transition: transform 280ms var(--motion-ease), box-shadow 280ms var(--motion-ease);
+  }
+
+  .listing-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 9px 22px rgba(7, 27, 70, .11);
+  }
+
+  .card-image {
+    display: block;
+    height: 180px;
+    overflow: hidden;
+    background: #eee8df;
+  }
+
+  .card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform 450ms var(--motion-ease);
+  }
+
+  .listing-card:hover .card-image img {
+    transform: scale(1.04);
+  }
+
+  .card-body {
+    padding: 16px;
+  }
+
+  h2 {
+    min-height: 45px;
+    margin: 0;
+    color: #071b46;
+    font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+
+  h2 a:hover,
+  h2 a:focus-visible {
+    color: #ff5b0a;
+  }
+
+  .card-meta {
+    display: grid;
+    grid-template-columns: minmax(0, .75fr) minmax(0, 1.25fr);
+    gap: 10px;
+    margin-top: 10px;
+    color: #717989;
+    font-size: 13px;
+    line-height: 1.2;
+  }
+
+  .card-meta span {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+    white-space: nowrap;
+  }
+
+  .card-meta svg {
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+    color: #ff5b0a;
+  }
+
+  .card-stars {
+    display: flex;
+    gap: 2px;
+    margin-top: 9px;
+    color: #08ad45;
+    line-height: 1;
+  }
+
+  .card-stars svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .card-footer {
+    min-height: 40px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .card-footer p {
+    display: grid;
+    margin: 0;
+  }
+
+  .card-footer p span {
+    color: #747c89;
+    font-size: 12px;
+    line-height: 1;
+  }
+
+  .card-footer p strong {
+    color: #ff5b0a;
+    font-size: 22px;
+    line-height: 1.05;
+  }
+
+  .card-footer > a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 3px;
+    color: #071b46;
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .card-footer > a svg {
+    width: 17px;
+    height: 17px;
+    color: #ff5b0a;
+    transition: transform 220ms var(--motion-ease);
+  }
+
+  .card-footer > a:hover svg,
+  .card-footer > a:focus-visible svg {
+    transform: translateX(4px);
+  }
+
+  @media (max-width: 1199px) {
+    .card-image {
+      height: 170px;
+    }
+  }
+
+  @media (max-width: 639px) {
+    .card-image {
+      height: 200px;
+    }
+
+    h2 {
+      min-height: 0;
+      font-size: 17px;
+    }
+
+    .card-meta {
+      font-size: 13px;
+    }
+
+    .card-footer p span,
+    .card-footer > a {
+      font-size: 13px;
+    }
+
+    .card-footer p strong {
+      font-size: 22px;
+    }
+  }
+</style>

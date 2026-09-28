@@ -1,0 +1,154 @@
+---
+import { siWhatsapp } from 'simple-icons';
+import { contact } from '../data/tours';
+---
+
+<div class="whatsapp-widget">
+  <span class="whatsapp-message">Besoin de plus d'infos ?</span>
+  <a
+    class="whatsapp-button"
+    href={contact.whatsappHref}
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Contact us on WhatsApp"
+  >
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d={siWhatsapp.path}></path>
+    </svg>
+  </a>
+</div>
+
+<script>
+  const widget = document.querySelector<HTMLElement>('.whatsapp-widget');
+
+  function keepWhatsAppClear() {
+    if (!widget) return;
+    const mobile = window.matchMedia('(max-width: 580px)').matches;
+    const baseBottom = mobile ? 18 : 28;
+    const widgetHeight = widget.offsetHeight;
+    const widgetWidth = widget.offsetWidth;
+    const widgetRight = window.innerWidth - (mobile ? 16 : 24);
+    const widgetLeft = widgetRight - widgetWidth;
+    const naturalTop = window.innerHeight - baseBottom - widgetHeight;
+    let lift = 0;
+
+    document.querySelectorAll<HTMLElement>('[data-whatsapp-clearance], .contact-links').forEach((target) => {
+      const rect = target.getBoundingClientRect();
+      const overlapsHorizontally = rect.right > widgetLeft && rect.left < widgetRight;
+      const overlapsVertically = rect.bottom > naturalTop && rect.top < window.innerHeight - baseBottom;
+      if (overlapsHorizontally && overlapsVertically) {
+        lift = Math.max(lift, naturalTop + widgetHeight - rect.top + 10);
+      }
+    });
+
+    widget.style.setProperty('--whatsapp-lift', `${Math.max(0, lift)}px`);
+  }
+
+  window.addEventListener('scroll', keepWhatsAppClear, { passive: true });
+  window.addEventListener('resize', keepWhatsAppClear);
+  keepWhatsAppClear();
+
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    window.setTimeout(() => {
+      const button = widget?.querySelector('.whatsapp-button');
+      button?.classList.add('attention');
+      window.setTimeout(() => button?.classList.remove('attention'), 800);
+    }, 2500);
+  }
+</script>
+
+<style>
+  .whatsapp-widget {
+    position: fixed;
+    right: 24px;
+    bottom: calc(28px + var(--whatsapp-lift, 0px));
+    z-index: 80;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: bottom 180ms ease;
+  }
+
+  .whatsapp-message {
+    position: relative;
+    padding: 12px 18px;
+    border-radius: 12px;
+    background: #fff;
+    color: #071b3f;
+    box-shadow: 0 8px 26px rgba(7, 27, 63, .16);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .whatsapp-message::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: -6px;
+    width: 12px;
+    height: 12px;
+    background: #fff;
+    transform: translateY(-50%) rotate(45deg);
+  }
+
+  .whatsapp-button {
+    position: relative;
+    z-index: 1;
+    width: 56px;
+    height: 56px;
+    flex: 0 0 56px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #25d366;
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(9, 85, 42, .3);
+    transition: transform 200ms ease, box-shadow 200ms ease, background 200ms ease;
+  }
+
+  .whatsapp-button svg {
+    width: 29px;
+    height: 29px;
+    fill: currentColor;
+  }
+
+  .whatsapp-button:hover,
+  .whatsapp-button:focus-visible {
+    background: #20bd5a;
+    transform: scale(1.05);
+    box-shadow: 0 11px 29px rgba(9, 85, 42, .4);
+  }
+
+  .whatsapp-button.attention {
+    animation: whatsapp-attention 700ms var(--motion-ease) 1;
+  }
+
+  @keyframes whatsapp-attention {
+    0%, 100% { transform: scale(1); }
+    45% { transform: scale(1.06); }
+  }
+
+  @media (max-width: 580px) {
+    .whatsapp-widget {
+      right: 16px;
+      bottom: calc(18px + var(--whatsapp-lift, 0px));
+    }
+
+    .whatsapp-message {
+      display: none;
+    }
+
+    .whatsapp-button {
+      width: 54px;
+      height: 54px;
+      flex-basis: 54px;
+    }
+
+    .whatsapp-button svg {
+      width: 28px;
+      height: 28px;
+    }
+  }
+</style>

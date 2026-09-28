@@ -1,0 +1,148 @@
+---
+import { MapPin, Mountain, Shield, Users } from '@lucide/astro';
+
+const features = [
+  {
+    title: 'Unforgettable Experiences',
+    subtitle: 'Desert, palm groves & more',
+    icon: Mountain,
+  },
+  {
+    title: 'Professional Guides',
+    subtitle: 'Safe & friendly support',
+    icon: Users,
+  },
+  {
+    title: 'Safety First',
+    subtitle: 'Well-maintained equipment',
+    icon: Shield,
+  },
+  {
+    title: 'Authentic Marrakech',
+    subtitle: 'Discover real Morocco',
+    icon: MapPin,
+  },
+];
+---
+
+<section class="feature-benefits" aria-label="Why choose Atlas Quad Palmeraie">
+  <div class="feature-grid">
+    {features.map(({ title, subtitle, icon: Icon }, index) => (
+      <article class="feature-item" data-reveal="up" style={`--delay: ${index * 70}ms`}>
+        <span class="icon-circle" aria-hidden="true">
+          <Icon size={29} strokeWidth={2.25} />
+        </span>
+        <div class="feature-copy">
+          <h2>{title}</h2>
+          <p>{subtitle}</p>
+        </div>
+      </article>
+    ))}
+  </div>
+</section>
+
+<style>
+  .feature-benefits {
+    width: 100%;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #eeeeee;
+    background: #fff;
+  }
+
+  .feature-grid {
+    width: min(calc(100% - 2rem), 1260px);
+    min-height: 120px;
+    margin-inline: auto;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .feature-item {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    padding: 20px 24px;
+  }
+
+  .feature-item + .feature-item {
+    border-left: 1px solid #e5e5e5;
+  }
+
+  .icon-circle {
+    width: 56px;
+    height: 56px;
+    flex: 0 0 56px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #fff1e8;
+    color: #f47a2a;
+  }
+
+  .feature-copy {
+    min-width: 0;
+  }
+
+  .feature-copy h2 {
+    max-width: 155px;
+    margin: 0 0 4px;
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: 0;
+  }
+
+  .feature-copy p {
+    margin: 0;
+    color: #74777e;
+    font-size: 0.77rem;
+    line-height: 1.35;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 960px) {
+    .feature-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .feature-item {
+      justify-content: flex-start;
+      padding-inline: clamp(1.25rem, 6vw, 4rem);
+    }
+
+    .feature-item:nth-child(3) {
+      border-left: 0;
+    }
+
+    .feature-item:nth-child(n + 3) {
+      border-top: 1px solid #e5e5e5;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .feature-grid {
+      width: min(calc(100% - 1.25rem), 32rem);
+      grid-template-columns: 1fr;
+    }
+
+    .feature-item {
+      min-height: 92px;
+      padding: 16px 12px;
+    }
+
+    .feature-item + .feature-item {
+      border-top: 1px solid #e5e5e5;
+      border-left: 0;
+    }
+
+    .feature-copy h2 {
+      max-width: none;
+    }
+  }
+</style>

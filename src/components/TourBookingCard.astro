@@ -1,0 +1,250 @@
+---
+import { BadgeCheck, CalendarDays, Headphones, Phone, Search, ShieldCheck, Users } from '@lucide/astro';
+import { contact } from '../data/tours';
+import type { Tour } from '../data/tours';
+
+type Props = { tour: Tour };
+const { tour } = Astro.props;
+---
+
+<aside class="booking-card" aria-labelledby="booking-title" data-whatsapp-clearance data-reveal="right" style="--delay: 120ms">
+  <p class="price-label">From</p>
+  <p class="price" id="booking-title">{tour.priceLabel}</p>
+  <p class="per-person">per person</p>
+
+  <form class="booking-form" data-booking-form data-tour={tour.title} data-whatsapp={contact.whatsappHref}>
+    <label for={`date-${tour.slug}`}>Date</label>
+    <div class="field-control">
+      <CalendarDays size={18} aria-hidden="true" />
+      <input id={`date-${tour.slug}`} name="date" type="date" required />
+    </div>
+
+    <label for={`guests-${tour.slug}`}>Guests</label>
+    <div class="field-control">
+      <Users size={18} aria-hidden="true" />
+      <select id={`guests-${tour.slug}`} name="guests">
+        <option value="1 Adult">1 Adult</option>
+        <option value="2 Adults">2 Adults</option>
+        <option value="3 Adults">3 Adults</option>
+        <option value="4+ Adults">4+ Adults</option>
+      </select>
+    </div>
+
+    <button class="availability-button" type="submit"><Search size={18} /> Check availability</button>
+    <p class="booking-note">This sends an enquiry by WhatsApp. Your activity is confirmed only after the team replies.</p>
+  </form>
+
+  <a class="call-panel" href={contact.phoneHref}>
+    <span aria-hidden="true"><Phone size={19} /></span>
+    <span><small>Need help? Call us</small><strong>{contact.phone}</strong></span>
+  </a>
+
+  <div class="booking-benefits" aria-label="Enquiry benefits">
+    <div><ShieldCheck size={22} /><span>Availability<br />request</span></div>
+    <div><BadgeCheck size={22} /><span>Team<br />confirmation</span></div>
+    <div><Headphones size={22} /><span>Local<br />support</span></div>
+  </div>
+</aside>
+
+<script>
+  document.querySelectorAll<HTMLFormElement>('[data-booking-form]').forEach((form) => {
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const data = new FormData(form);
+      const message = [
+        `Hello Atlas Quad Palmeraie, I would like to check availability for ${form.dataset.tour}.`,
+        `Date: ${data.get('date')}`,
+        `Guests: ${data.get('guests')}`,
+      ].join('\n');
+      window.open(`${form.dataset.whatsapp}?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
+    });
+  });
+</script>
+
+<style>
+  .booking-card {
+    padding: 24px;
+    border: 1px solid #e7e7e7;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 14px 34px rgba(7, 27, 70, .12);
+  }
+
+  .price-label,
+  .price,
+  .per-person {
+    margin: 0;
+  }
+
+  .price-label,
+  .per-person {
+    color: #667085;
+    font-size: 13px;
+  }
+
+  .price {
+    color: #ff5b0a;
+    font-size: 38px;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .per-person {
+    margin-top: 4px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #e7e7e7;
+  }
+
+  .booking-form {
+    display: grid;
+    margin-top: 18px;
+  }
+
+  label {
+    margin: 0 0 7px;
+    color: #071b46;
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  label:not(:first-child) {
+    margin-top: 14px;
+  }
+
+  .field-control {
+    min-width: 0;
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+    min-height: 46px;
+    padding: 0 12px;
+    border: 1px solid #dfe3e8;
+    border-radius: 6px;
+    color: #ff5b0a;
+    background: #fff;
+    transition: border-color 200ms ease, box-shadow 200ms ease;
+  }
+
+  .field-control svg {
+    opacity: .8;
+    transition: opacity 200ms ease;
+  }
+
+  .field-control:focus-within {
+    border-color: #ff5b0a;
+    box-shadow: 0 0 0 3px rgba(255, 91, 10, .1);
+  }
+
+  .field-control:focus-within svg {
+    opacity: 1;
+  }
+
+  input,
+  select {
+    width: 100%;
+    min-width: 0;
+    height: 44px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #4e5d73;
+    font-size: 14px;
+  }
+
+  .availability-button {
+    min-height: 50px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    margin-top: 18px;
+    border: 0;
+    border-radius: 6px;
+    background: #ff5b0a;
+    color: #fff;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 9px 22px rgba(255, 91, 10, .22);
+    transition: background 200ms ease, transform 200ms var(--motion-ease), box-shadow 200ms ease;
+  }
+
+  .availability-button:hover,
+  .availability-button:focus-visible {
+    background: #eb4f00;
+    transform: translateY(-2px);
+    box-shadow: 0 13px 27px rgba(255, 91, 10, .28);
+  }
+
+  .availability-button:active {
+    transform: translateY(0) scale(.98);
+  }
+
+  .booking-note {
+    margin: 10px 0 0;
+    color: #667085;
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  .call-panel {
+    display: grid;
+    grid-template-columns: 38px 1fr;
+    align-items: center;
+    gap: 10px;
+    margin-top: 18px;
+    padding: 12px;
+    border-radius: 7px;
+    background: #fff4ec;
+  }
+
+  .call-panel > span:first-child {
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    color: #fff;
+    background: #ff5b0a;
+  }
+
+  .call-panel small,
+  .call-panel strong {
+    display: block;
+  }
+
+  .call-panel small {
+    color: #667085;
+    font-size: 11px;
+  }
+
+  .call-panel strong {
+    margin-top: 2px;
+    color: #071b46;
+    font-size: 14px;
+  }
+
+  .booking-benefits {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin: 20px -8px -4px;
+    padding-top: 17px;
+    border-top: 1px solid #e7e7e7;
+  }
+
+  .booking-benefits div {
+    min-width: 0;
+    display: grid;
+    justify-items: center;
+    gap: 6px;
+    color: #ff5b0a;
+    text-align: center;
+  }
+
+  .booking-benefits span {
+    color: #526174;
+    font-size: 10px;
+    line-height: 1.25;
+  }
+</style>

@@ -1,0 +1,282 @@
+---
+import { CalendarDays, MapPin, Search, Star, Ticket } from '@lucide/astro';
+
+const reviewRows = [5, 4, 3, 2, 1];
+---
+
+<aside id="filters" class="tour-filters" aria-label="Search tour filters">
+  <h2>Search Tours</h2>
+
+  <div class="quick-fields">
+    <label class="quick-field">
+      <MapPin size={13} strokeWidth={2.2} aria-hidden="true" />
+      <span class="sr-only">Booking location</span>
+      <select id="booking-location" aria-label="Booking Locations">
+        <option value="">Booking Locations</option>
+        <option value="La palmeraie">La palmeraie</option>
+        <option value="Marrakesh">Marrakesh</option>
+      </select>
+    </label>
+    <label class="quick-field">
+      <Ticket size={13} strokeWidth={2.2} aria-hidden="true" />
+      <span class="sr-only">Booking type</span>
+      <select id="booking-type" aria-label="Booking Types">
+        <option value="">Booking Types</option>
+        <option value="Quad Bike">Quad Bike</option>
+        <option value="Camel Ride">Camel Ride</option>
+        <option value="Hot Air Balloon">Hot Air Balloon</option>
+        <option value="Paragliding">Paragliding</option>
+      </select>
+    </label>
+    <label class="quick-field">
+      <CalendarDays size={13} strokeWidth={2.2} aria-hidden="true" />
+      <span class="sr-only">Date from</span>
+      <input type="text" inputmode="numeric" placeholder="Date from" aria-label="Date from" />
+    </label>
+    <label class="quick-field">
+      <CalendarDays size={13} strokeWidth={2.2} aria-hidden="true" />
+      <span class="sr-only">Date to</span>
+      <input type="text" inputmode="numeric" placeholder="Date to" aria-label="Date to" />
+    </label>
+  </div>
+
+  <fieldset>
+    <legend>Destination</legend>
+    <label><input type="checkbox" name="destination" value="La palmeraie" /> <span>La palmeraie</span></label>
+    <label><input type="checkbox" name="destination" value="Marrakesh" /> <span>Marrakesh</span></label>
+  </fieldset>
+
+  <fieldset class="price-filter">
+    <legend>Price</legend>
+    <input id="price-range" type="range" min="15" max="140" value="140" aria-label="Maximum tour price" />
+    <output id="price-output" for="price-range">&euro;15 - &euro;140</output>
+  </fieldset>
+
+  <fieldset>
+    <legend>Activity</legend>
+    {['Quad Bike', 'Camel Ride', 'Hot Air Balloon', 'Paragliding'].map((activity) => (
+      <label><input type="checkbox" name="activity" value={activity} /> <span>{activity}</span></label>
+    ))}
+  </fieldset>
+
+  <fieldset class="review-filter">
+    <legend>Reviews</legend>
+    {reviewRows.map((rating) => (
+      <label>
+        <input type="checkbox" name="review" value={rating} aria-label={`${rating} star reviews`} />
+        <span class="review-stars" aria-hidden="true">
+          {Array.from({ length: rating }).map(() => <Star size={12} strokeWidth={1.8} fill="currentColor" />)}
+        </span>
+      </label>
+    ))}
+  </fieldset>
+
+  <button id="search-tours" type="button"><Search size={14} strokeWidth={2.3} aria-hidden="true" /> Search Tours</button>
+</aside>
+
+<style>
+  .tour-filters {
+    width: 280px;
+    margin-top: -52px;
+    padding: 22px;
+    border: 1px solid #edf0f3;
+    border-radius: 7px;
+    background: #fff;
+    box-shadow: 0 8px 25px rgba(7, 27, 70, .07);
+  }
+
+  h2 {
+    margin: 0 0 16px;
+    color: #071b46;
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  .quick-fields {
+    display: grid;
+    gap: 8px;
+  }
+
+  .quick-field {
+    display: grid;
+    grid-template-columns: 24px 1fr;
+    align-items: center;
+    height: 42px;
+    padding: 0 11px;
+    border: 1px solid #dfe4eb;
+    border-radius: 4px;
+    color: #ff5b0a;
+    background: #fff;
+  }
+
+  .quick-field > svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .quick-field select,
+  .quick-field input {
+    min-width: 0;
+    width: 100%;
+    height: 39px;
+    padding: 0 16px 0 0;
+    border: 0;
+    outline: 0;
+    color: #778091;
+    background: transparent;
+    font-size: 13px;
+  }
+
+  .quick-field input::placeholder {
+    color: #778091;
+    opacity: 1;
+  }
+
+  fieldset {
+    display: grid;
+    gap: 8px;
+    margin: 14px 0 0;
+    padding: 13px 0 0;
+    border: 0;
+    border-top: 1px solid #ebedf0;
+  }
+
+  legend {
+    width: 100%;
+    padding: 0 0 8px;
+    color: #071b46;
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  fieldset label {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 20px;
+    color: #727b8c;
+    font-size: 13px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    margin: 0;
+    accent-color: #ff5b0a;
+  }
+
+  .price-filter {
+    gap: 6px;
+  }
+
+  input[type="range"] {
+    width: 100%;
+    height: 18px;
+    margin: 0;
+    accent-color: #ff5b0a;
+  }
+
+  output {
+    color: #7c8491;
+    font-size: 13px;
+  }
+
+  .review-filter {
+    gap: 5px;
+  }
+
+  .review-stars {
+    display: inline-flex;
+    gap: 1px;
+    color: #0aad45;
+  }
+
+  .review-stars svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  #search-tours {
+    width: 100%;
+    min-height: 46px;
+    margin-top: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    border: 0;
+    border-radius: 5px;
+    background: #ff5b0a;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  #search-tours svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  #search-tours:hover,
+  #search-tours:focus-visible {
+    background: #e94f00;
+  }
+
+  @media (max-width: 1199px) and (min-width: 900px) {
+    .tour-filters {
+      width: 240px;
+      padding: 18px;
+    }
+
+    h2 {
+      font-size: 18px;
+    }
+
+    .quick-field select,
+    .quick-field input,
+    fieldset label,
+    output {
+      font-size: 12px;
+    }
+  }
+
+  @media (max-width: 899px) {
+    .tour-filters {
+      display: none;
+      width: 100%;
+      margin-top: 0;
+      padding: 20px;
+    }
+
+    .tour-filters.open {
+      display: block;
+    }
+
+    h2 {
+      font-size: 19px;
+    }
+
+    .quick-field {
+      height: 42px;
+    }
+
+    .quick-field select,
+    .quick-field input,
+    fieldset label,
+    output,
+    #search-tours {
+      font-size: 13px;
+    }
+
+    fieldset label {
+      min-height: 20px;
+    }
+
+    #search-tours {
+      min-height: 46px;
+    }
+  }
+</style>

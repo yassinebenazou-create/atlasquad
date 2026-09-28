@@ -1,0 +1,187 @@
+---
+import { Send } from '@lucide/astro';
+import { contact } from '../data/tours';
+---
+
+<section class="contact-form-section" aria-labelledby="message-heading">
+  <h2 id="message-heading">Send us a message</h2>
+  <p>Fill in the form below and we'll get back to you as soon as possible.</p>
+
+  <form class="contact-form" data-contact-form data-recipient={contact.email}>
+    <div class="form-grid">
+      <label>
+        <span>Your Name <em>*</em></span>
+        <input name="name" type="text" placeholder="Your full name" autocomplete="name" required />
+      </label>
+      <label>
+        <span>Your Email <em>*</em></span>
+        <input name="email" type="email" placeholder="your@email.com" autocomplete="email" required />
+      </label>
+      <label>
+        <span>Phone Number <em>*</em></span>
+        <input name="phone" type="tel" placeholder="+212 6XX XXX XXX" autocomplete="tel" required />
+      </label>
+      <label>
+        <span>Subject</span>
+        <select name="subject">
+          <option>Booking Request</option>
+          <option>Tour Information</option>
+          <option>Group Booking</option>
+          <option>Other</option>
+        </select>
+      </label>
+    </div>
+    <label class="message-field">
+      <span>Message</span>
+      <textarea name="message" placeholder="Tell us about your request, preferred date, number of people..." required></textarea>
+    </label>
+    <button type="submit" data-whatsapp-clearance><Send size={16} strokeWidth={2.2} aria-hidden="true" /> Send Message</button>
+    <p class="form-status" aria-live="polite"></p>
+  </form>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLFormElement>('[data-contact-form]').forEach((form) => {
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (!form.reportValidity()) return;
+
+      const data = new FormData(form);
+      const subject = String(data.get('subject') ?? 'Contact request');
+      const body = [
+        `Name: ${String(data.get('name') ?? '')}`,
+        `Email: ${String(data.get('email') ?? '')}`,
+        `Phone: ${String(data.get('phone') ?? '')}`,
+        '',
+        String(data.get('message') ?? ''),
+      ].join('\n');
+      const recipient = form.dataset.recipient ?? '';
+      const status = form.querySelector<HTMLElement>('.form-status');
+      if (status) status.textContent = 'Your email app will open so you can finish sending the message.';
+      window.location.href = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    });
+  });
+</script>
+
+<style>
+  .contact-form-section {
+    padding-top: 20px;
+    border-top: 1px solid #e7e9ed;
+  }
+
+  h2 {
+    margin: 0;
+    color: #082b4f;
+    font-size: 25px;
+    line-height: 1.1;
+  }
+
+  .contact-form-section > p {
+    margin: 6px 0 14px;
+    color: #6b7280;
+    font-size: 13px;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 18px;
+  }
+
+  label {
+    display: grid;
+    gap: 6px;
+    color: #17223a;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  em {
+    color: #ff641f;
+    font-style: normal;
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    min-width: 0;
+    border: 1px solid #dce1e7;
+    border-radius: 7px;
+    outline: 0;
+    background: #fff;
+    color: #17223a;
+    font-size: 13px;
+    transition: border-color 160ms ease, box-shadow 160ms ease;
+  }
+
+  input,
+  select {
+    height: 43px;
+    padding: 0 12px;
+  }
+
+  textarea {
+    min-height: 82px;
+    padding: 11px 12px;
+    resize: vertical;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: #929baa;
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    border-color: #ff641f;
+    box-shadow: 0 0 0 3px rgba(255, 100, 31, .12);
+  }
+
+  .message-field {
+    margin-top: 12px;
+  }
+
+  button {
+    width: 100%;
+    min-height: 46px;
+    margin-top: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 0;
+    border-radius: 7px;
+    background: #ff641f;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background 200ms ease, transform 200ms var(--motion-ease), box-shadow 200ms ease;
+  }
+
+  button:hover,
+  button:focus-visible {
+    background: #e95512;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(255, 100, 31, .22);
+  }
+
+  button:active {
+    transform: translateY(0) scale(.98);
+  }
+
+  .form-status {
+    min-height: 16px;
+    margin: 6px 0 0;
+    color: #667085;
+    font-size: 11px;
+  }
+
+  @media (max-width: 560px) {
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,130 @@
+---
+import { Star } from '@lucide/astro';
+import type { Tour } from '../data/tours';
+
+type Props = { tour: Tour };
+const { tour } = Astro.props;
+---
+
+<section class="tour-hero" aria-labelledby="tour-title">
+  <img src={tour.heroImage} alt={tour.imageAlt} data-hero-image />
+  <div class="tour-hero-shade" aria-hidden="true"></div>
+  <div class="tour-hero-content">
+    <nav aria-label="Breadcrumb" data-reveal="left" style="--delay: 80ms">
+      <a href="/">Home</a><span>/</span><a href="/tours/">Tours</a><span>/</span><span aria-current="page">{tour.shortTitle}</span>
+    </nav>
+    <h1 id="tour-title" data-reveal="up" style="--delay: 160ms">{tour.title}</h1>
+    <div class="tour-rating" aria-label="5 out of 5 stars" data-reveal="up" style="--delay: 240ms">
+      {Array.from({ length: 5 }, () => <Star size={21} strokeWidth={2.2} fill="currentColor" />)}
+    </div>
+    <p data-reveal="up" style="--delay: 320ms">{tour.description}</p>
+  </div>
+</section>
+
+<style>
+  .tour-hero {
+    position: relative;
+    min-height: clamp(360px, 26vw, 430px);
+    display: grid;
+    align-items: end;
+    overflow: hidden;
+    background: #372b22;
+    color: #fff;
+  }
+
+  .tour-hero > img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .tour-hero-shade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(2, 13, 31, .88) 0%, rgba(2, 13, 31, .56) 36%, rgba(2, 13, 31, .08) 70%);
+  }
+
+  .tour-hero-content {
+    position: relative;
+    z-index: 1;
+    width: min(calc(100% - 40px), 1700px);
+    margin-inline: auto;
+    padding: 38px 0 42px;
+  }
+
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    max-width: 760px;
+    margin-bottom: 18px;
+    color: rgba(255, 255, 255, .82);
+    font-size: 13px;
+  }
+
+  nav a:hover,
+  nav a:focus-visible {
+    color: #ff6b21;
+  }
+
+  h1 {
+    max-width: 700px;
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(42px, 4vw, 64px);
+    line-height: .98;
+  }
+
+  .tour-rating {
+    display: flex;
+    gap: 3px;
+    margin: 14px 0 11px;
+    color: #12bf4f;
+  }
+
+  p {
+    max-width: 690px;
+    margin: 0;
+    color: rgba(255, 255, 255, .94);
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 760px) {
+    .tour-hero {
+      min-height: 390px;
+    }
+
+    .tour-hero > img {
+      object-position: 58% center;
+    }
+
+    .tour-hero-shade {
+      background: linear-gradient(0deg, rgba(2, 13, 31, .9) 0%, rgba(2, 13, 31, .28) 82%);
+    }
+
+    .tour-hero-content {
+      width: calc(100% - 28px);
+      padding-bottom: 28px;
+    }
+
+    nav {
+      margin-bottom: 12px;
+      font-size: 11px;
+    }
+
+    h1 {
+      max-width: 540px;
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+      font-size: clamp(34px, 10vw, 48px);
+      font-weight: 900;
+    }
+
+    p {
+      font-size: 14px;
+    }
+  }
+</style>

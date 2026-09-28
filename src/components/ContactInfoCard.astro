@@ -1,0 +1,114 @@
+---
+import { Clock3, Mail, MapPin, MessageCircle, Phone } from '@lucide/astro';
+
+type IconName = 'phone' | 'whatsapp' | 'email' | 'location' | 'hours';
+type Props = {
+  icon: IconName;
+  title: string;
+  lines: string[];
+  href?: string;
+  external?: boolean;
+  delay?: number;
+};
+
+const { icon, title, lines, href, external = false, delay = 0 } = Astro.props;
+const icons = { phone: Phone, whatsapp: MessageCircle, email: Mail, location: MapPin, hours: Clock3 };
+const Icon = icons[icon];
+---
+
+<div class:list={['contact-info-item', { 'contact-email-item': icon === 'email' }]} data-reveal="up" style={`--delay: ${delay}ms`}>
+  <span class="contact-info-icon" aria-hidden="true"><Icon size={20} strokeWidth={2.1} /></span>
+  <div>
+    <h3>{title}</h3>
+    {href ? (
+      <a
+        class:list={['contact-info-value', { 'contact-email': icon === 'email' }]}
+        href={href}
+        target={external ? '_blank' : undefined}
+        rel={external ? 'noopener noreferrer' : undefined}
+      >
+        {lines.map((line) => icon === 'email' && line.includes('@') ? (
+          <span>{line.split('@')[0]}@<wbr />{line.split('@')[1]}</span>
+        ) : <span>{line}</span>)}
+      </a>
+    ) : (
+      <p class="contact-info-value">{lines.map((line) => <span>{line}</span>)}</p>
+    )}
+  </div>
+</div>
+
+<style>
+  .contact-info-item {
+    min-width: 0;
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 12px;
+    align-items: start;
+  }
+
+  .contact-email-item {
+    align-items: center;
+  }
+
+  .contact-info-icon {
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #ff641f;
+    color: #fff;
+    box-shadow: 0 7px 18px rgba(255, 100, 31, .2);
+    transition: transform 220ms var(--motion-ease), box-shadow 220ms ease;
+  }
+
+  .contact-info-item:hover .contact-info-icon {
+    transform: scale(1.05);
+    box-shadow: 0 10px 23px rgba(255, 100, 31, .25);
+  }
+
+  h3 {
+    margin: 2px 0 3px;
+    color: #082b4f;
+    font-size: 14px;
+    line-height: 1.2;
+  }
+
+  p,
+  a {
+    display: grid;
+    margin: 0;
+    color: #536176;
+    font-size: 15px;
+    line-height: 1.35;
+    overflow-wrap: normal;
+    word-break: normal;
+  }
+
+  .contact-email {
+    white-space: nowrap;
+    overflow-wrap: normal;
+    word-break: normal;
+  }
+
+  a:hover,
+  a:focus-visible {
+    color: #ff641f;
+  }
+
+  @media (max-width: 560px) {
+    .contact-info-item {
+      grid-template-columns: 44px minmax(0, 1fr);
+    }
+
+    .contact-info-icon {
+      width: 44px;
+      height: 44px;
+    }
+
+    .contact-email {
+      white-space: normal;
+      font-size: 14px;
+    }
+  }
+</style>

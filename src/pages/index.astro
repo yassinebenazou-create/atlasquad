@@ -1,17 +1,71 @@
 ---
-
+import BaseLayout from '../layouts/BaseLayout.astro';
+import DealsSection from '../components/DealsSection.astro';
+import FeatureBenefits from '../components/FeatureBenefits.astro';
+import StatsSection from '../components/StatsSection.astro';
+import { contact, site } from '../data/tours';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout title="Atlas Quad Palmeraie | Marrakech Outdoor Activities" description="Explore quad biking, camel rides and outdoor activities around Marrakech Palmeraie with Atlas Quad Palmeraie.">
+  <section class="home-hero" aria-label="Quad bike overlooking the Marrakech Palmeraie at sunset">
+    <img class="hero-image" src="/images/hero-palmeraie-quad.png" alt="Quad bike overlooking the Marrakech Palmeraie at sunset" data-hero-image />
+    <div class="container hero-copy">
+      <p class="hero-eyebrow" data-reveal="left" style="--delay: 80ms">ADVENTURE AWAITS</p>
+      <h1 class="display" data-reveal="up" style="--delay: 160ms">Explore Marrakech <strong>Beyond the Road</strong></h1>
+      <p data-reveal="up" style="--delay: 240ms">Ride through palm groves, cross desert trails and discover the authentic beauty of Marrakech with Atlas Quad Palmeraie.</p>
+      <div class="hero-actions" data-reveal="up" style="--delay: 320ms"><a class="button" href="/tours/">Explore tours <span aria-hidden="true">&rarr;</span></a><a class="button secondary" href={contact.whatsappHref} target="_blank" rel="noreferrer">Contact us <span aria-hidden="true">&#9673;</span></a></div>
+    </div>
+  </section>
+
+  <FeatureBenefits />
+
+  <DealsSection />
+
+  <StatsSection />
+
+  <section id="about" class="section about">
+    <div class="container about-grid">
+      <div class="about-media" data-reveal="scale"><img src={site.aboutImage} alt="Marrakech city and the Koutoubia Mosque at sunset" loading="lazy" /></div>
+      <div class="about-copy">
+        <p class="eyebrow" data-reveal="left">Atlas Quad Palmeraie</p>
+        <h2 class="display" data-reveal="up" style="--delay: 80ms">See another side of <strong>Marrakech</strong></h2>
+        <p data-reveal="up" style="--delay: 140ms">Atlas Quad Palmeraie presents outdoor activities in and around Marrakech, including quad biking, camel rides, hot air ballooning and paragliding.</p>
+        <p data-reveal="up" style="--delay: 180ms">Use the tour pages to choose an activity, then contact the team for current prices, timing, availability and practical details.</p>
+        <div data-reveal="up" style="--delay: 220ms"><a class="button" href="/tours/">Discover all activities</a></div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .home-hero { position: relative; width: 100%; aspect-ratio: 1672 / 940; min-height: 0; display: grid; align-items: center; overflow: hidden; color: #fff; background: #825a32; }
+  .home-hero::after { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(90deg,rgba(12,12,8,.78) 0%,rgba(12,12,8,.52) 32%,rgba(12,12,8,.08) 64%,transparent); pointer-events: none; }
+  .hero-image { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: center; }
+  .hero-copy { position: relative; z-index: 2; width: min(88%,1200px); padding-block: 4.5rem; background: transparent; }
+  .hero-eyebrow { display: flex; align-items: center; gap: 1rem; margin: 0 0 .9rem; font-size: .78rem; font-weight: 800; letter-spacing: .28em; text-transform: uppercase; }
+  .hero-eyebrow::after { content: ""; width: 2rem; height: 2px; background: var(--orange); }
+  .hero-copy .display { max-width: 760px; color: #fff; font-size: clamp(3.1rem,5vw,4rem); line-height: .96; }
+  .hero-copy .display strong { display: block; color: var(--orange); }
+  .hero-copy > p:not(.hero-eyebrow) { max-width: 510px; margin: 1rem 0 1.25rem; font-size: 1.06rem; line-height: 1.45; }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: .8rem; }
+  .hero-actions .button { min-width: 190px; min-height: 3.2rem; padding-inline: 1.8rem; }
+  .hero-actions .secondary { background: rgba(8,12,12,.28); }
+  .about { background: #fff; }
+  .about-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: clamp(2rem,6vw,6rem); align-items: center; }
+  .about-media { height: 520px; border-radius: 10px; }
+  .about-media img { width: 100%; height: 100%; object-fit: cover; object-position: center; border-radius: 10px; display: block; }
+  .about-copy .display { margin: .8rem 0 1.5rem; font-size: clamp(2.4rem,5vw,4.2rem); }
+  .about-copy > p:not(.eyebrow) { color: var(--ink-soft); font-size: 1.02rem; line-height: 1.75; }
+  .about-copy .button { margin-top: .8rem; }
+  @media (max-width: 900px) { .about-grid { grid-template-columns: 1fr; } .about-media { height: 400px; } }
+  @media (max-width: 760px) {
+    .home-hero { aspect-ratio: auto; min-height: calc(100svh - 86px); }
+    .home-hero::after { background: linear-gradient(180deg,rgba(3,16,38,.12),rgba(3,16,38,.78)); }
+    .hero-image { object-position: 62% center; }
+    .hero-copy { align-self: end; width: min(100% - 1.25rem,42rem); padding-block: 5rem 4rem; }
+    .hero-copy .display { max-width: 12ch; font-size: clamp(2.8rem,13vw,4.25rem); }
+    .hero-copy .display strong { display: block; }
+    .hero-copy > p:not(.hero-eyebrow) { font-size: 1rem; }
+    .about-media { height: 320px; }
+  }
+</style>

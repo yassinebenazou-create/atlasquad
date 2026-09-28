@@ -1,0 +1,46 @@
+---
+import type { Tour } from '../data/tours';
+
+type Props = { tour: Tour; featured?: boolean };
+const { tour, featured = false } = Astro.props;
+---
+
+<article class:list={['tour-card', { featured }]}>
+  <a class="media card-image" href={`/tours/${tour.slug}/`} data-label="Tour photo">
+    <img src={tour.cardImage} alt={tour.imageAlt} loading="lazy" onerror="this.remove()" />
+    <span class="duration">{tour.duration}</span>
+  </a>
+  <div class="card-body">
+    <p class="type">{tour.activityTypes.join(' + ')}</p>
+    <h3><a href={`/tours/${tour.slug}/`}>{tour.shortTitle}</a></h3>
+    <p>{tour.description}</p>
+    <div class="card-meta">
+      <span>{tour.location}</span>
+      <a href={`/tours/${tour.slug}/`} aria-label={`View ${tour.title}`}>View tour <span aria-hidden="true">&rarr;</span></a>
+    </div>
+  </div>
+</article>
+
+<style>
+  .tour-card { overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; box-shadow: 0 12px 30px rgba(7,27,63,.08); transition: transform 180ms ease, box-shadow 180ms ease; }
+  .tour-card:hover { transform: translateY(-5px); box-shadow: var(--shadow); }
+  .card-image { display: block; aspect-ratio: 1.55; }
+  .duration { position: absolute; z-index: 2; left: 1rem; top: 1rem; padding: .45rem .7rem; border-radius: 4px; background: #fff; color: var(--ink); font-size: .78rem; font-weight: 900; box-shadow: 0 5px 16px rgba(0,0,0,.14); }
+  .card-body { padding: 1.2rem; }
+  .type { margin: 0 0 .45rem; color: var(--orange); font-size: .72rem; font-weight: 900; text-transform: uppercase; }
+  h3 { min-height: 2.7em; margin: 0; font-family: Georgia, 'Times New Roman', serif; font-size: 1.35rem; line-height: 1.25; }
+  .card-body > p:not(.type) { min-height: 3.2em; margin: .75rem 0 1rem; color: var(--ink-soft); font-size: .92rem; line-height: 1.55; }
+  .card-meta { display: flex; justify-content: space-between; gap: 1rem; padding-top: .9rem; border-top: 1px solid var(--line); font-size: .82rem; font-weight: 800; }
+  .card-meta a { color: var(--orange); white-space: nowrap; }
+  @media (max-width: 760px) {
+    .tour-card { display: grid; grid-template-columns: minmax(7.5rem, 42%) 1fr; }
+    .card-image { aspect-ratio: auto; min-height: 15rem; }
+    .card-body { padding: 1rem; }
+    .card-body > p:not(.type) { min-height: 0; display: -webkit-box; overflow: hidden; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
+    .card-meta { display: grid; }
+  }
+  @media (max-width: 430px) {
+    .tour-card { grid-template-columns: 1fr; }
+    .card-image { min-height: 13rem; }
+  }
+</style>

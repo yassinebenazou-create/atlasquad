@@ -1,0 +1,102 @@
+---
+type Props = { image: string; imageAlt: string };
+const { image, imageAlt } = Astro.props;
+---
+
+<article class="review-placeholder" aria-label="Google review placeholder">
+  <div class="review-placeholder__content">
+    <div class="review-placeholder__person"><span aria-hidden="true"></span><div><i></i><i></i></div></div>
+    <p>Verified review content will appear here.</p>
+    <div class="review-placeholder__lines" aria-hidden="true"><span></span><span></span><span></span></div>
+    <small>Google review placeholder</small>
+  </div>
+  <img src={image} alt={imageAlt} loading="lazy" />
+</article>
+
+<style>
+  .review-placeholder {
+    min-width: 0;
+    min-height: 154px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 122px;
+    gap: 16px;
+    padding: 16px;
+    border: 1px solid #e9e9e9;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 8px 24px rgba(8, 43, 79, .06);
+  }
+
+  .review-placeholder__person {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+
+  .review-placeholder__person > span {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    border-radius: 50%;
+    background: #e7ebef;
+  }
+
+  .review-placeholder__person > div {
+    width: 96px;
+    display: grid;
+    gap: 5px;
+  }
+
+  .review-placeholder__person i,
+  .review-placeholder__lines span {
+    display: block;
+    height: 7px;
+    border-radius: 99px;
+    background: #e8ebee;
+  }
+
+  .review-placeholder__person i:last-child {
+    width: 62%;
+  }
+
+  p {
+    margin: 12px 0 9px;
+    color: #596579;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .review-placeholder__lines {
+    display: grid;
+    gap: 6px;
+  }
+
+  .review-placeholder__lines span:nth-child(2) { width: 92%; }
+  .review-placeholder__lines span:nth-child(3) { width: 68%; }
+
+  small {
+    display: block;
+    margin-top: 10px;
+    color: #9aa1ac;
+    font-size: 10px;
+  }
+
+  img {
+    width: 122px;
+    height: 122px;
+    align-self: center;
+    border-radius: 9px;
+    object-fit: cover;
+  }
+
+  @media (max-width: 480px) {
+    .review-placeholder {
+      grid-template-columns: minmax(0, 1fr) 92px;
+    }
+
+    img {
+      width: 92px;
+      height: 112px;
+    }
+  }
+</style>

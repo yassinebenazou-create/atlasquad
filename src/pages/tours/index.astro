@@ -1,0 +1,209 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ToursFilterSidebar from '../../components/ToursFilterSidebar.astro';
+import ToursHero from '../../components/ToursHero.astro';
+import ToursListingCard from '../../components/ToursListingCard.astro';
+import ToursToolbar from '../../components/ToursToolbar.astro';
+import { tourListings } from '../../data/tours';
+---
+
+<BaseLayout
+  title="Marrakech Tours & Activities | Atlas Quad Palmeraie"
+  description="Explore quad bike, camel ride, hot air balloon and paragliding activities in Marrakech and the Palmeraie."
+>
+  <ToursHero />
+
+  <section class="tours-listing" aria-label="Marrakech tours">
+    <div class="listing-shell">
+      <ToursFilterSidebar />
+
+      <div class="listing-results">
+        <ToursToolbar count={tourListings.length} />
+        <div id="tour-grid" class="tour-grid">
+          {tourListings.map((tour, index) => (
+            <div
+              class="tour-item"
+              data-reveal="scale"
+              style={`--delay: ${(index % 6) * 80}ms`}
+              data-index={index}
+              data-title={tour.title}
+              data-price={tour.price}
+              data-rating={tour.rating}
+              data-destination={tour.destination}
+              data-activities={tour.activities.join('|')}
+            >
+              <ToursListingCard tour={tour} />
+            </div>
+          ))}
+        </div>
+        <p id="empty-results" class="empty-results" hidden>No tours match those filters.</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  const filters = document.querySelector<HTMLElement>('#filters');
+  const filterToggle = document.querySelector<HTMLButtonElement>('.filter-toggle');
+  const searchButton = document.querySelector<HTMLButtonElement>('#search-tours');
+  const locationSelect = document.querySelector<HTMLSelectElement>('#booking-location');
+  const typeSelect = document.querySelector<HTMLSelectElement>('#booking-type');
+  const priceRange = document.querySelector<HTMLInputElement>('#price-range');
+  const priceOutput = document.querySelector<HTMLOutputElement>('#price-output');
+  const sortSelect = document.querySelector<HTMLSelectElement>('#sort');
+  const grid = document.querySelector<HTMLElement>('#tour-grid');
+  const resultCount = document.querySelector<HTMLElement>('#result-count strong');
+  const resultNoun = document.querySelector<HTMLElement>('#result-count span');
+  const emptyResults = document.querySelector<HTMLElement>('#empty-results');
+  const items = Array.from(document.querySelectorAll<HTMLElement>('.tour-item'));
+
+  const checkedValues = (name: string) =>
+    Array.from(document.querySelectorAll<HTMLInputElement>(`input[name="${name}"]:checked`)).map((input) => input.value);
+
+  function applyFilters() {
+    const destinations = checkedValues('destination');
+    const activities = checkedValues('activity');
+    const reviewValues = checkedValues('review').map(Number);
+    const minimumRating = reviewValues.length ? Math.min(...reviewValues) : 0;
+    const maxPrice = Number(priceRange?.value ?? 140);
+    const quickDestination = locationSelect?.value ?? '';
+    const quickActivity = typeSelect?.value ?? '';
+    let visible = 0;
+
+    items.forEach((item) => {
+      const destination = item.dataset.destination ?? '';
+      const activitiesForTour = (item.dataset.activities ?? '').split('|');
+      const price = Number(item.dataset.price ?? 0);
+      const rating = Number(item.dataset.rating ?? 0);
+      const matches =
+        (!quickDestination || destination === quickDestination) &&
+        (!quickActivity || activitiesForTour.includes(quickActivity)) &&
+        (!destinations.length || destinations.includes(destination)) &&
+        (!activities.length || activities.some((activity) => activitiesForTour.includes(activity))) &&
+        rating >= minimumRating &&
+        price <= maxPrice;
+
+      item.hidden = !matches;
+      if (matches) visible += 1;
+    });
+
+    if (resultCount) resultCount.textContent = String(visible);
+    if (resultNoun) resultNoun.textContent = visible === 1 ? 'Tour' : 'Tours';
+    if (emptyResults) emptyResults.hidden = visible !== 0;
+
+    if (window.matchMedia('(max-width: 899px)').matches && filters?.classList.contains('open')) {
+      filters.classList.remove('open');
+      filterToggle?.setAttribute('aria-expanded', 'false');
+    }
+  }
+
+  function sortTours() {
+    if (!grid) return;
+    const mode = sortSelect?.value ?? 'title';
+    const ordered = [...items].sort((a, b) => {
+      if (mode === 'price-asc') return Number(a.dataset.price) - Number(b.dataset.price);
+      if (mode === 'price-desc') return Number(b.dataset.price) - Number(a.dataset.price);
+      return (a.dataset.title ?? '').localeCompare(b.dataset.title ?? '');
+    });
+    ordered.forEach((item) => grid.append(item));
+  }
+
+  priceRange?.addEventListener('input', () => {
+    if (priceOutput) priceOutput.textContent = `\u20AC15 - \u20AC${priceRange.value}`;
+  });
+
+  searchButton?.addEventListener('click', applyFilters);
+  sortSelect?.addEventListener('change', sortTours);
+  filterToggle?.addEventListener('click', () => {
+    const isOpen = filterToggle.getAttribute('aria-expanded') === 'true';
+    filterToggle.setAttribute('aria-expanded', String(!isOpen));
+    filters?.classList.toggle('open', !isOpen);
+  });
+</script>
+
+<style>
+  .tours-listing {
+    min-height: 560px;
+    padding: 32px 0 48px;
+    background: #fbfaf8;
+  }
+
+  .listing-shell {
+    position: relative;
+    z-index: 3;
+    width: min(94vw, 1440px);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: 28px;
+    align-items: start;
+  }
+
+  .listing-results {
+    min-width: 0;
+  }
+
+  .tour-grid {
+    min-width: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .tour-item {
+    min-width: 0;
+  }
+
+  .tour-item[hidden] {
+    display: none;
+  }
+
+  .empty-results {
+    margin: 28px 0;
+    padding: 28px;
+    border: 1px solid #e7e9ed;
+    border-radius: 7px;
+    color: #707988;
+    background: #fff;
+    text-align: center;
+  }
+
+  @media (max-width: 1199px) {
+    .listing-shell {
+      grid-template-columns: 240px minmax(0, 1fr);
+      gap: 24px;
+    }
+
+    .tour-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+  }
+
+  @media (max-width: 899px) {
+    .listing-shell {
+      width: min(calc(100% - 2rem), 720px);
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .tour-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+  }
+
+  @media (max-width: 639px) {
+    .tours-listing {
+      padding: 20px 0;
+    }
+
+    .listing-shell {
+      width: calc(100% - 1.5rem);
+    }
+
+    .tour-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

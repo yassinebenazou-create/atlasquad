@@ -1,0 +1,301 @@
+---
+const stats = [
+  {
+    value: 500,
+    suffix: '+',
+    label: 'Happy Clients',
+    icon: '/images/stats/happy-clients.png',
+  },
+  {
+    value: 1200,
+    suffix: '+',
+    label: 'Tours Completed',
+    icon: '/images/stats/tours-completed.png',
+  },
+  {
+    value: 4,
+    suffix: '',
+    label: 'Unique Activities',
+    icon: '/images/stats/unique-activities.png',
+  },
+  {
+    value: 5,
+    suffix: '+',
+    label: 'Years of Experience',
+    icon: '/images/stats/years-experience.png',
+  },
+] as const;
+---
+
+<section id="numbers" class="stats-section" aria-labelledby="stats-heading" data-stats-section>
+  <div class="stats-overlay" aria-hidden="true"></div>
+  <div class="stats-inner">
+    <header class="stats-header">
+      <p class="stats-eyebrow" data-reveal="left">Atlas Quad</p>
+      <h2 id="stats-heading" data-reveal="up" style="--delay: 70ms"><span>Our</span> <strong>Numbers</strong></h2>
+      <span class="title-line" aria-hidden="true" data-reveal="left" data-reveal-line style="--delay: 120ms"></span>
+      <p class="stats-description" data-reveal="up" style="--delay: 150ms">Trusted by travelers who choose Atlas Quad to explore Marrakech and its stunning surroundings.</p>
+    </header>
+
+    <div class="stats-grid">
+      {stats.map((stat, index) => (
+        <article class="stat-item" data-reveal="scale" style={`--delay: ${200 + index * 70}ms`}>
+          <img src={stat.icon} alt="" width="56" height="56" loading="lazy" />
+          <p
+            class="stat-value"
+            data-stat-value
+            data-target={stat.value}
+            data-suffix={stat.suffix}
+            aria-label={`${stat.value.toLocaleString('en-US')}${stat.suffix} ${stat.label}`}
+          >
+            {stat.value.toLocaleString('en-US')}{stat.suffix}
+          </p>
+          <h3>{stat.label}</h3>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-stats-section]').forEach((section) => {
+    const values = Array.from(section.querySelectorAll<HTMLElement>('[data-stat-value]'));
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const showFinalValues = () => {
+      values.forEach((element) => {
+        const target = Number(element.dataset.target ?? 0);
+        element.textContent = `${target.toLocaleString('en-US')}${element.dataset.suffix ?? ''}`;
+      });
+    };
+
+    if (reducedMotion || !('IntersectionObserver' in window)) {
+      showFinalValues();
+      return;
+    }
+
+    values.forEach((element) => {
+      element.textContent = `0${element.dataset.suffix ?? ''}`;
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      observer.disconnect();
+
+      const start = performance.now();
+      const duration = 1500;
+
+      const animate = (time: number) => {
+        const progress = Math.min((time - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+
+        values.forEach((element) => {
+          const target = Number(element.dataset.target ?? 0);
+          const current = Math.round(target * eased);
+          element.textContent = `${current.toLocaleString('en-US')}${element.dataset.suffix ?? ''}`;
+        });
+
+        if (progress < 1) requestAnimationFrame(animate);
+      };
+
+      requestAnimationFrame(animate);
+    }, { threshold: 0.3 });
+
+    observer.observe(section);
+  });
+</script>
+
+<style>
+  .stats-section {
+    position: relative;
+    isolation: isolate;
+    width: 100%;
+    min-height: 470px;
+    display: grid;
+    align-items: center;
+    overflow: hidden;
+    background-image: url('/images/our-numbers-bg-wide.jpg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: #fff;
+  }
+
+  .stats-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: rgba(4, 18, 40, .68);
+  }
+
+  .stats-inner {
+    width: min(calc(100% - 40px), 1800px);
+    margin-inline: auto;
+    padding: 66px 0 76px;
+  }
+
+  .stats-header {
+    text-align: center;
+  }
+
+  .stats-eyebrow {
+    margin: 0 0 8px;
+    color: #ff6b21;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .24em;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(54px, 4.5vw, 64px);
+    line-height: 1;
+  }
+
+  h2 span {
+    color: #fff;
+  }
+
+  h2 strong {
+    color: #ff6b21;
+  }
+
+  .title-line {
+    width: 58px;
+    height: 3px;
+    display: block;
+    margin: 18px auto;
+    background: #ff6b21;
+  }
+
+  .stats-description {
+    max-width: 760px;
+    margin: 0 auto;
+    color: rgba(255, 255, 255, .82);
+    font-size: 17px;
+    line-height: 1.55;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-top: 46px;
+  }
+
+  .stat-item {
+    min-width: 0;
+    display: grid;
+    justify-items: center;
+    align-content: center;
+    padding: 0 28px;
+    text-align: center;
+  }
+
+  .stat-item + .stat-item {
+    border-left: 1px solid rgba(255, 255, 255, .22);
+  }
+
+  .stat-item img {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+  }
+
+  .stat-value {
+    margin: 13px 0 8px;
+    color: #fff;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(56px, 4.5vw, 68px);
+    font-weight: 700;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  h3 {
+    margin: 0;
+    color: rgba(255, 255, 255, .88);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    line-height: 1.35;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 1099px) {
+    .stats-section {
+      min-height: 560px;
+    }
+
+    .stats-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      row-gap: 34px;
+    }
+
+    .stat-item {
+      padding-block: 10px;
+    }
+
+    .stat-item + .stat-item {
+      border-left: 0;
+    }
+
+    .stat-item:nth-child(even) {
+      border-left: 1px solid rgba(255, 255, 255, .22);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .stats-section {
+      min-height: 0;
+    }
+
+    .stats-inner {
+      width: calc(100% - 24px);
+      padding: 54px 0 60px;
+    }
+
+    h2 {
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+      font-size: 43px;
+      font-weight: 900;
+    }
+
+    .stats-description {
+      font-size: 15px;
+    }
+
+    .stats-grid {
+      gap: 34px 12px;
+      margin-top: 40px;
+    }
+
+    .stat-item,
+    .stat-item:nth-child(even) {
+      padding: 0 6px;
+      border-left: 0;
+    }
+
+    .stat-item img {
+      width: 46px;
+      height: 46px;
+    }
+
+    .stat-value {
+      margin-top: 10px;
+      font-size: 44px;
+    }
+
+    h3 {
+      font-size: 11px;
+      letter-spacing: .11em;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
