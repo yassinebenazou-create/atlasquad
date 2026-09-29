@@ -1,0 +1,15 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "atlas-quad-palmeraie",
+  "pages_build_output_dir": "./dist",
+  "compatibility_date": "2026-09-28",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "atlas-quad-reviews",
+      // Replace this placeholder with the database ID returned by `wrangler d1 create`.
+      "database_id": "f5794911-9c68-4b12-9068-0bd3ba4c475c",
+      "preview_database_id": "DB"
+    }
+  ]
+}

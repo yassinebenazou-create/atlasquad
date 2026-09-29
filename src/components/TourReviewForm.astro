@@ -1,42 +1,79 @@
 ---
 import { Send, Star } from '@lucide/astro';
-import { contact } from '../data/tours';
 import type { Tour } from '../data/tours';
 
 type Props = { tour: Tour };
 const { tour } = Astro.props;
-const criteria = ['Location', 'Experience', 'Guide', 'Value for Money', 'Overall'];
+const criteria = [
+  { label: 'Location', name: 'locationRating', required: false },
+  { label: 'Experience', name: 'experienceRating', required: false },
+  { label: 'Guide', name: 'guideRating', required: false },
+  { label: 'Value for Money', name: 'valueRating', required: false },
+  { label: 'Overall', name: 'rating', required: true },
+] as const;
+const headingId = `reviews-heading-${tour.slug}`;
 ---
 
-<section class="review-section" aria-labelledby="reviews-heading">
+<section class="review-section" aria-labelledby={headingId} data-review-section data-tour-slug={tour.slug}>
   <div class="review-heading">
     <div>
-      <h2 id="reviews-heading">Reviews</h2>
+      <h2 id={headingId}>Reviews</h2>
       <p>Share your experience with us!</p>
     </div>
-    <div class="heading-stars" aria-hidden="true">
-      {Array.from({ length: 5 }, () => <Star size={23} fill="currentColor" />)}
+    <div class="review-summary" data-review-summary hidden>
+      <div><strong data-review-average></strong><Star size={22} fill="currentColor" aria-hidden="true" /></div>
+      <span data-review-count></span>
     </div>
   </div>
 
-  <form class="review-form" data-review-form data-tour={tour.title} data-email={contact.email}>
+  <div class="review-results" aria-live="polite">
+    <p class="review-state" data-review-state>Loading reviews...</p>
+    <div class="review-list" data-review-list hidden></div>
+  </div>
+
+  <template data-review-template>
+    <article class="customer-review-card">
+      <header>
+        <div>
+          <h3 data-review-name></h3>
+          <time data-review-date></time>
+        </div>
+        <div class="customer-review-stars" data-review-stars>
+          {Array.from({ length: 5 }, () => <Star size={17} aria-hidden="true" />)}
+        </div>
+      </header>
+      <p data-review-comment></p>
+    </article>
+  </template>
+
+  <form class="review-form" data-review-form>
+    <label class="honeypot" aria-hidden="true">
+      <span>Company</span>
+      <input type="text" name="company" tabindex="-1" autocomplete="off" />
+    </label>
+
     <div class="review-fields">
       <div class="identity-fields">
-        <label><span>Your Name *</span><input type="text" name="name" required /></label>
-        <label><span>Email Address *</span><input type="email" name="email" required /></label>
-        <label><span>Your Website</span><input type="url" name="website" /></label>
+        <label><span>Your Name *</span><input type="text" name="name" minlength="2" maxlength="80" autocomplete="name" required /></label>
+        <label><span>Email Address *</span><input type="email" name="email" maxlength="254" autocomplete="email" required /></label>
+        <label><span>Your Website</span><input type="url" name="website" autocomplete="url" /></label>
       </div>
-      <label class="comment-field"><span>Your Comment *</span><textarea name="comment" required></textarea></label>
+      <label class="comment-field"><span>Your Comment *</span><textarea name="comment" minlength="10" maxlength="1500" required></textarea></label>
     </div>
 
     <div class="rating-panel">
       {criteria.map((criterion) => (
         <div class="rating-row">
-          <span>{criterion}</span>
-          <div class="rating-buttons" role="group" aria-label={`${criterion} rating`} data-rating-group>
-            <input type="hidden" name={`rating-${criterion.toLowerCase().replaceAll(' ', '-')}`} value="" />
+          <span>{criterion.label}{criterion.required ? ' *' : ''}</span>
+          <div class="rating-buttons" role="group" aria-label={`${criterion.label} rating`} data-rating-group>
+            <input type="hidden" name={criterion.name} value="" />
             {Array.from({ length: 5 }, (_, index) => (
-              <button type="button" data-rating={index + 1} aria-label={`${index + 1} star${index ? 's' : ''}`}>
+              <button
+                type="button"
+                data-rating={index + 1}
+                aria-label={`${index + 1} star${index ? 's' : ''} for ${criterion.label}`}
+                aria-pressed="false"
+              >
                 <Star size={20} />
               </button>
             ))}
@@ -46,222 +83,300 @@ const criteria = ['Location', 'Experience', 'Guide', 'Value for Money', 'Overall
     </div>
 
     <div class="review-actions">
-      <button class="submit-review" type="submit"><Send size={17} /> Submit Review</button>
+      <button class="submit-review" type="submit">
+        <Send size={17} aria-hidden="true" />
+        <span data-submit-label>Submit Review</span>
+      </button>
       <p>Your email address will not be published. Required fields are marked *</p>
+      <p class="submission-status" data-submission-status aria-live="polite"></p>
     </div>
   </form>
 </section>
 
 <script>
-  document.querySelectorAll<HTMLElement>('[data-rating-group]').forEach((group) => {
-    const input = group.querySelector<HTMLInputElement>('input');
-    const buttons = Array.from(group.querySelectorAll<HTMLButtonElement>('button'));
-    buttons.forEach((button) => {
-      button.addEventListener('click', () => {
-        const rating = Number(button.dataset.rating);
+  type PublicReview = {
+    id: number;
+    tour_slug: string;
+    name: string;
+    comment: string;
+    rating: number;
+    created_at: string;
+  };
+
+  type ReviewsResponse = {
+    success: boolean;
+    reviews?: PublicReview[];
+    summary?: { count: number; average: number | null };
+    error?: string;
+    message?: string;
+  };
+
+  const formatReviewDate = (value: string) => {
+    const normalized = value.includes('T') ? value : `${value.replace(' ', 'T')}Z`;
+    const date = new Date(normalized);
+    if (Number.isNaN(date.getTime())) return '';
+    return new Intl.DateTimeFormat('en', { day: 'numeric', month: 'short', year: 'numeric' }).format(date);
+  };
+
+  document.querySelectorAll<HTMLElement>('[data-review-section]').forEach((section) => {
+    const tourSlug = section.dataset.tourSlug ?? '';
+    const state = section.querySelector<HTMLElement>('[data-review-state]');
+    const list = section.querySelector<HTMLElement>('[data-review-list]');
+    const summary = section.querySelector<HTMLElement>('[data-review-summary]');
+    const average = section.querySelector<HTMLElement>('[data-review-average]');
+    const count = section.querySelector<HTMLElement>('[data-review-count]');
+    const template = section.querySelector<HTMLTemplateElement>('[data-review-template]');
+    const form = section.querySelector<HTMLFormElement>('[data-review-form]');
+
+    const renderReviews = (payload: ReviewsResponse) => {
+      const reviews = payload.reviews ?? [];
+      if (!state || !list) return;
+      list.replaceChildren();
+
+      if (!reviews.length) {
+        state.hidden = false;
+        state.textContent = 'No reviews yet. Be the first to share your experience.';
+        list.hidden = true;
+        if (summary) summary.hidden = true;
+        return;
+      }
+
+      reviews.forEach((review) => {
+        if (!template) return;
+        const fragment = template.content.cloneNode(true) as DocumentFragment;
+        const card = fragment.querySelector<HTMLElement>('.customer-review-card');
+        const name = fragment.querySelector<HTMLElement>('[data-review-name]');
+        const date = fragment.querySelector<HTMLTimeElement>('[data-review-date]');
+        const comment = fragment.querySelector<HTMLElement>('[data-review-comment]');
+        const stars = fragment.querySelector<HTMLElement>('[data-review-stars]');
+
+        if (card) card.dataset.reviewId = String(review.id);
+        if (name) name.textContent = review.name;
+        if (comment) comment.textContent = review.comment;
+        if (date) {
+          date.dateTime = review.created_at;
+          date.textContent = formatReviewDate(review.created_at);
+        }
+        if (stars) {
+          stars.setAttribute('aria-label', `${review.rating} out of 5 stars`);
+          stars.querySelectorAll('svg').forEach((star, index) => star.classList.toggle('filled', index < review.rating));
+        }
+
+        list.append(fragment);
+      });
+
+      state.hidden = true;
+      list.hidden = false;
+
+      const approvedCount = Number(payload.summary?.count ?? reviews.length);
+      const approvedAverage = payload.summary?.average;
+      if (summary && average && count && approvedCount > 0 && approvedAverage !== null && approvedAverage !== undefined) {
+        average.textContent = approvedAverage.toFixed(1);
+        count.textContent = `Based on ${approvedCount} approved review${approvedCount === 1 ? '' : 's'}`;
+        summary.hidden = false;
+      }
+    };
+
+    const loadReviews = async () => {
+      try {
+        const response = await fetch(`/api/reviews?tour=${encodeURIComponent(tourSlug)}`, {
+          headers: { Accept: 'application/json' },
+        });
+        const payload = await response.json() as ReviewsResponse;
+        if (!response.ok || !payload.success) throw new Error('Unable to load reviews');
+        renderReviews(payload);
+      } catch {
+        if (state) {
+          state.hidden = false;
+          state.textContent = 'Reviews are temporarily unavailable.';
+        }
+        if (list) list.hidden = true;
+        if (summary) summary.hidden = true;
+      }
+    };
+
+    window.setTimeout(loadReviews, 0);
+
+    section.querySelectorAll<HTMLElement>('[data-rating-group]').forEach((group) => {
+      const input = group.querySelector<HTMLInputElement>('input');
+      const buttons = Array.from(group.querySelectorAll<HTMLButtonElement>('button'));
+
+      const paint = (rating: number, preview = false) => {
+        buttons.forEach((button) => {
+          const value = Number(button.dataset.rating);
+          button.classList.toggle(preview ? 'preview' : 'active', value <= rating);
+          if (!preview) {
+            button.classList.remove('preview');
+            button.setAttribute('aria-pressed', String(value === rating));
+          }
+        });
+      };
+
+      const selectRating = (rating: number) => {
         if (input) input.value = String(rating);
-        buttons.forEach((item) => {
-          const active = Number(item.dataset.rating) <= rating;
-          item.classList.toggle('active', active);
-          item.setAttribute('aria-pressed', String(active));
+        group.dataset.selectedRating = String(rating);
+        paint(rating);
+      };
+
+      buttons.forEach((button, index) => {
+        button.addEventListener('click', () => selectRating(index + 1));
+        button.addEventListener('mouseenter', () => paint(index + 1, true));
+        button.addEventListener('keydown', (event) => {
+          if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) return;
+          event.preventDefault();
+          const direction = event.key === 'ArrowRight' || event.key === 'ArrowUp' ? 1 : -1;
+          const selected = Number(group.dataset.selectedRating ?? 0);
+          const next = Math.min(5, Math.max(1, (selected || index + 1) + direction));
+          selectRating(next);
+          buttons[next - 1]?.focus();
         });
       });
-    });
-  });
 
-  document.querySelectorAll<HTMLFormElement>('[data-review-form]').forEach((form) => {
-    form.addEventListener('submit', (event) => {
+      group.addEventListener('mouseleave', () => paint(Number(group.dataset.selectedRating ?? 0)));
+    });
+
+    let submitting = false;
+    form?.addEventListener('submit', async (event) => {
       event.preventDefault();
-      if (!form.reportValidity()) return;
+      if (submitting || !form.reportValidity()) return;
+
       const data = new FormData(form);
-      const ratings = Array.from(data.entries())
-        .filter(([key, value]) => key.startsWith('rating-') && value)
-        .map(([key, value]) => `${key.replace('rating-', '').replaceAll('-', ' ')}: ${value}/5`)
-        .join('\n');
-      const body = [
-        `Tour: ${form.dataset.tour}`,
-        `Name: ${data.get('name')}`,
-        `Email: ${data.get('email')}`,
-        data.get('website') ? `Website: ${data.get('website')}` : '',
-        ratings,
-        '',
-        String(data.get('comment')),
-      ].filter(Boolean).join('\n');
-      window.location.href = `mailto:${form.dataset.email}?subject=${encodeURIComponent(`Tour review: ${form.dataset.tour}`)}&body=${encodeURIComponent(body)}`;
+      const overallRating = Number(data.get('rating') ?? 0);
+      const status = form.querySelector<HTMLElement>('[data-submission-status]');
+      const button = form.querySelector<HTMLButtonElement>('.submit-review');
+      const buttonLabel = form.querySelector<HTMLElement>('[data-submit-label]');
+
+      if (!Number.isInteger(overallRating) || overallRating < 1 || overallRating > 5) {
+        if (status) {
+          status.className = 'submission-status error';
+          status.textContent = 'Please choose an overall rating.';
+        }
+        form.querySelector<HTMLButtonElement>('[data-rating-group]:last-child button')?.focus();
+        return;
+      }
+
+      const optionalRating = (name: string) => {
+        const value = Number(data.get(name) ?? 0);
+        return value >= 1 && value <= 5 ? value : null;
+      };
+
+      submitting = true;
+      form.setAttribute('aria-busy', 'true');
+      if (button) button.disabled = true;
+      if (buttonLabel) buttonLabel.textContent = 'Submitting...';
+      if (status) {
+        status.className = 'submission-status';
+        status.textContent = '';
+      }
+
+      let failureMessage = 'We could not submit your review. Please try again.';
+      try {
+        const response = await fetch('/api/reviews', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({
+            tourSlug,
+            name: data.get('name'),
+            email: data.get('email'),
+            comment: data.get('comment'),
+            rating: overallRating,
+            locationRating: optionalRating('locationRating'),
+            experienceRating: optionalRating('experienceRating'),
+            guideRating: optionalRating('guideRating'),
+            valueRating: optionalRating('valueRating'),
+            company: data.get('company'),
+          }),
+        });
+        const payload = await response.json() as ReviewsResponse;
+        if (!response.ok || !payload.success) {
+          failureMessage = payload.error ?? failureMessage;
+          throw new Error('Submission failed');
+        }
+
+        form.reset();
+        form.querySelectorAll<HTMLElement>('[data-rating-group]').forEach((group) => {
+          delete group.dataset.selectedRating;
+          group.querySelectorAll<HTMLButtonElement>('button').forEach((star) => {
+            star.classList.remove('active', 'preview');
+            star.setAttribute('aria-pressed', 'false');
+          });
+        });
+        if (status) {
+          status.className = 'submission-status success';
+          status.textContent = payload.message ?? 'Thank you! Your review was submitted and will appear after approval.';
+        }
+      } catch {
+        if (status) {
+          status.className = 'submission-status error';
+          status.textContent = failureMessage;
+        }
+      } finally {
+        submitting = false;
+        form.removeAttribute('aria-busy');
+        if (button) button.disabled = false;
+        if (buttonLabel) buttonLabel.textContent = 'Submit Review';
+      }
     });
   });
 </script>
 
 <style>
-  .review-section {
-    padding-top: 6px;
-  }
-
-  .review-heading {
-    display: flex;
-    align-items: end;
-    gap: 18px;
-    margin-bottom: 17px;
-  }
-
-  h2 {
-    margin: 0;
-    color: #071b46;
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 34px;
-    line-height: 1;
-  }
-
-  .review-heading p {
-    margin: 7px 0 0;
-    color: #667085;
-    font-size: 14px;
-  }
-
-  .heading-stars {
-    display: flex;
-    gap: 3px;
-    padding-bottom: 1px;
-    color: #00a63c;
-  }
-
-  .review-form {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 260px;
-    gap: 18px;
-  }
-
-  .identity-fields {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
-  }
-
-  label,
-  label span {
-    display: grid;
-  }
-
-  label span {
-    margin-bottom: 6px;
-    color: #536176;
-    font-size: 12px;
-  }
-
-  input,
-  textarea {
-    width: 100%;
-    border: 1px solid #dfe3e8;
-    border-radius: 5px;
-    background: #fff;
-    color: #071b46;
-  }
-
-  input {
-    height: 44px;
-    padding: 0 12px;
-  }
-
-  textarea {
-    min-height: 138px;
-    padding: 12px;
-    resize: vertical;
-  }
-
-  .comment-field {
-    margin-top: 12px;
-  }
-
-  .rating-panel {
-    align-self: end;
-    padding: 16px;
-    border-radius: 7px;
-    background: #f5f6f8;
-  }
-
-  .rating-row {
-    display: grid;
-    grid-template-columns: minmax(92px, 1fr) auto;
-    align-items: center;
-    gap: 8px;
-    min-height: 30px;
-    color: #536176;
-    font-size: 11px;
-  }
-
-  .rating-buttons {
-    display: flex;
-  }
-
-  .rating-buttons button {
-    width: 24px;
-    height: 27px;
-    display: grid;
-    place-items: center;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    color: #98a2b3;
-    cursor: pointer;
-  }
-
-  .rating-buttons button:hover,
-  .rating-buttons button:focus-visible,
-  .rating-buttons button.active {
-    color: #f5ac00;
-  }
-
-  .rating-buttons button.active :global(svg) {
-    fill: currentColor;
-  }
-
-  .review-actions {
-    grid-column: 1 / -1;
-    display: flex;
-    align-items: center;
-    gap: 18px;
-  }
-
-  .submit-review {
-    min-height: 46px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 0 24px;
-    border: 0;
-    border-radius: 5px;
-    background: #ff5b0a;
-    color: #fff;
-    font-weight: 800;
-    cursor: pointer;
-  }
-
-  .review-actions p {
-    margin: 0;
-    color: #667085;
-    font-size: 11px;
-  }
+  .review-section { padding-top: 6px; }
+  [hidden] { display: none !important; }
+  .review-heading { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin-bottom: 17px; }
+  h2 { margin: 0; color: #071b46; font-family: Georgia, "Times New Roman", serif; font-size: 34px; line-height: 1; }
+  .review-heading p { margin: 7px 0 0; color: #667085; font-size: 14px; }
+  .review-summary { text-align: right; }
+  .review-summary > div { display: flex; align-items: center; justify-content: flex-end; gap: 6px; color: #f5a400; }
+  .review-summary strong { color: #071b46; font-family: Georgia, "Times New Roman", serif; font-size: 28px; }
+  .review-summary span { display: block; margin-top: 2px; color: #667085; font-size: 11px; }
+  .review-results { min-height: 78px; margin-bottom: 24px; }
+  .review-state { margin: 0; padding: 22px; border: 1px solid #e4e7ec; border-radius: 8px; background: #f8f9fb; color: #667085; font-size: 14px; text-align: center; }
+  .review-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .customer-review-card { min-width: 0; padding: 18px; border: 1px solid #e5e8ed; border-radius: 8px; background: #fff; box-shadow: 0 7px 20px rgba(7, 27, 70, .06); }
+  .customer-review-card header { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+  .customer-review-card h3 { margin: 0; color: #071b46; font-size: 15px; }
+  .customer-review-card time { display: block; margin-top: 3px; color: #7a8494; font-size: 11px; }
+  .customer-review-card > p { margin: 13px 0 0; color: #536176; font-size: 14px; line-height: 1.55; overflow-wrap: anywhere; white-space: pre-wrap; }
+  .customer-review-stars { flex: 0 0 auto; display: flex; gap: 1px; color: #cbd1d9; }
+  .customer-review-stars :global(svg.filled) { color: #f5a400; fill: currentColor; }
+  .review-form { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 18px; }
+  .honeypot { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+  .identity-fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  label, label span { display: grid; }
+  label span { margin-bottom: 6px; color: #536176; font-size: 12px; }
+  input, textarea { width: 100%; border: 1px solid #dfe3e8; border-radius: 5px; outline: 0; background: #fff; color: #071b46; transition: border-color 180ms ease, box-shadow 180ms ease; }
+  input:focus, textarea:focus { border-color: #ff5b0a; box-shadow: 0 0 0 3px rgba(255, 91, 10, .1); }
+  input { height: 44px; padding: 0 12px; }
+  textarea { min-height: 138px; padding: 12px; resize: vertical; }
+  .comment-field { margin-top: 12px; }
+  .rating-panel { align-self: end; padding: 16px; border-radius: 7px; background: #f5f6f8; }
+  .rating-row { display: grid; grid-template-columns: minmax(92px, 1fr) auto; align-items: center; gap: 8px; min-height: 30px; color: #536176; font-size: 11px; }
+  .rating-buttons { display: flex; }
+  .rating-buttons button { width: 24px; height: 27px; display: grid; place-items: center; padding: 0; border: 0; background: transparent; color: #98a2b3; cursor: pointer; transition: color 160ms ease, transform 160ms var(--motion-ease); }
+  .rating-buttons button:hover, .rating-buttons button:focus-visible, .rating-buttons button.active, .rating-buttons button.preview { color: #f5a400; }
+  .rating-buttons button:hover, .rating-buttons button:focus-visible { transform: scale(1.08); }
+  .rating-buttons button.active :global(svg), .rating-buttons button.preview :global(svg) { fill: currentColor; }
+  .review-actions { grid-column: 1 / -1; display: flex; align-items: center; flex-wrap: wrap; gap: 10px 18px; }
+  .submit-review { min-width: 160px; min-height: 46px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0 24px; border: 0; border-radius: 5px; background: #ff5b0a; color: #fff; font-weight: 800; cursor: pointer; transition: background 200ms ease, transform 200ms var(--motion-ease), opacity 200ms ease; }
+  .submit-review:hover, .submit-review:focus-visible { background: #e95105; transform: translateY(-2px); }
+  .submit-review:active { transform: translateY(0) scale(.98); }
+  .submit-review:disabled { cursor: wait; opacity: .68; transform: none; }
+  .review-actions > p:not(.submission-status) { margin: 0; color: #667085; font-size: 11px; }
+  .submission-status { flex-basis: 100%; min-height: 20px; margin: 0; font-size: 13px; font-weight: 700; }
+  .submission-status.success { color: #087b39; }
+  .submission-status.error { color: #b42318; }
 
   @media (max-width: 820px) {
-    .review-form {
-      grid-template-columns: 1fr;
-    }
-
-    .rating-panel {
-      width: min(100%, 360px);
-    }
+    .review-list, .review-form { grid-template-columns: 1fr; }
+    .rating-panel { width: min(100%, 360px); }
   }
 
   @media (max-width: 620px) {
-    .review-heading,
-    .review-actions {
-      align-items: flex-start;
-      flex-direction: column;
-    }
-
-    .identity-fields {
-      grid-template-columns: 1fr;
-    }
+    .review-heading, .review-actions { align-items: flex-start; flex-direction: column; }
+    .review-summary { text-align: left; }
+    .review-summary > div { justify-content: flex-start; }
+    .identity-fields { grid-template-columns: 1fr; }
+    .submit-review { width: 100%; }
   }
 </style>

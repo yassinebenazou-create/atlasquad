@@ -8,6 +8,10 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "pages:dev": "npm run build && wrangler pages dev",
+    "db:local:apply": "wrangler d1 execute DB --local --file=./schema.sql",
+    "db:remote:apply": "wrangler d1 execute DB --remote --file=./schema.sql",
+    "typecheck:functions": "tsc -p functions/tsconfig.json",
     "preview": "astro preview",
     "astro": "astro"
   },
@@ -18,5 +22,10 @@
   },
   "allowScripts": {
     "esbuild": true
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260928.1",
+    "typescript": "^7.0.2",
+    "wrangler": "^4.143.0"
   }
 }
