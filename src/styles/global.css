@@ -215,6 +215,13 @@ img {
   transform: translateY(24px) scale(0.98);
 }
 
+@media (max-width: 1023px) {
+  .motion-ready [data-reveal="left"]:not(.is-visible),
+  .motion-ready [data-reveal="right"]:not(.is-visible) {
+    transform: translateY(18px);
+  }
+}
+
 [data-reveal-line] {
   transform-origin: left center;
 }

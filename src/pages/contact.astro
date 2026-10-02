@@ -6,13 +6,27 @@ import ContactInfoCard from '../components/ContactInfoCard.astro';
 import ContactMap from '../components/ContactMap.astro';
 import GoogleReviews from '../components/GoogleReviews.astro';
 import { contactPage, googleBusiness } from '../data/contact';
-import { contact } from '../data/tours';
+import { contact, site } from '../data/tours';
+
+const contactUrl = new URL('/contact/', site.origin).toString();
+const structuredData = [
+  {
+    '@type': 'ContactPage',
+    '@id': `${contactUrl}#contact`,
+    url: contactUrl,
+    name: 'Contact Atlas Quad Palmeraie in Marrakech',
+    description: 'Phone, WhatsApp, email and map details for Atlas Quad Palmeraie in Marrakech, Morocco.',
+    about: { '@id': `${site.origin}/#business` },
+  },
+];
 ---
 
 <BaseLayout
   title="Contact Atlas Quad Palmeraie | Marrakech"
   description="Contact Atlas Quad Palmeraie by phone, WhatsApp or email and find our location in Marrakech Palmeraie."
   pathname="/contact/"
+  image="/images/tours/tours-hero-marrakech.jpg"
+  structuredData={structuredData}
 >
   <ContactHero />
 

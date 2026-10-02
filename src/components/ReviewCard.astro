@@ -10,7 +10,7 @@ const { image, imageAlt } = Astro.props;
     <div class="review-placeholder__lines" aria-hidden="true"><span></span><span></span><span></span></div>
     <small>Google review placeholder</small>
   </div>
-  <img src={image} alt={imageAlt} loading="lazy" />
+  <img src={image} alt={imageAlt} loading="lazy" decoding="async" />
 </article>
 
 <style>

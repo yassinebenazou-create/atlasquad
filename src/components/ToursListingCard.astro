@@ -8,7 +8,7 @@ const { tour } = Astro.props;
 
 <article class="listing-card">
   <a class="card-image" href={`/tours/${tour.slug}/`} aria-label={`View ${tour.title}`}>
-    <img src={tour.image} alt={tour.imageAlt} loading="lazy" />
+    <img src={tour.image} alt={tour.imageAlt} loading="lazy" decoding="async" />
   </a>
   <div class="card-body">
     <h2><a href={`/tours/${tour.slug}/`}>{tour.title}</a></h2>
@@ -58,7 +58,7 @@ const { tour } = Astro.props;
   }
 
   .listing-card:hover .card-image img {
-    transform: scale(1.04);
+    transform: scale(1.035);
   }
 
   .card-body {

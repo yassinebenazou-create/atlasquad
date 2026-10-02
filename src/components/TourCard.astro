@@ -7,7 +7,7 @@ const { tour, featured = false } = Astro.props;
 
 <article class:list={['tour-card', { featured }]}>
   <a class="media card-image" href={`/tours/${tour.slug}/`} data-label="Tour photo">
-    <img src={tour.cardImage} alt={tour.imageAlt} loading="lazy" onerror="this.remove()" />
+    <img src={tour.cardImage} alt={tour.imageAlt} loading="lazy" decoding="async" onerror="this.remove()" />
     <span class="duration">{tour.duration}</span>
   </a>
   <div class="card-body">

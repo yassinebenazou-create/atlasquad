@@ -2,10 +2,13 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import TourBookingCard from '../../components/TourBookingCard.astro';
 import TourDetailHero from '../../components/TourDetailHero.astro';
+import TourFaq from '../../components/TourFaq.astro';
 import TourGallery from '../../components/TourGallery.astro';
 import TourIncludedExcluded from '../../components/TourIncludedExcluded.astro';
+import TourSeoContent from '../../components/TourSeoContent.astro';
 import TourReviewForm from '../../components/TourReviewForm.astro';
-import { tours, type Tour } from '../../data/tours';
+import RelatedTours from '../../components/RelatedTours.astro';
+import { site, tours, type Tour } from '../../data/tours';
 
 export function getStaticPaths() {
   return tours.map((tour) => ({ params: { slug: tour.slug }, props: { tour } }));
@@ -13,9 +16,60 @@ export function getStaticPaths() {
 
 type Props = { tour: Tour };
 const { tour } = Astro.props;
+const pathname = `/tours/${tour.slug}/`;
+const tourUrl = new URL(pathname, site.origin).toString();
+const relatedTours = tour.relatedSlugs
+  .map((slug) => tours.find((candidate) => candidate.slug === slug))
+  .filter((candidate): candidate is Tour => Boolean(candidate));
+const structuredData = [
+  {
+    '@type': 'TouristTrip',
+    '@id': `${tourUrl}#tour`,
+    name: tour.title,
+    description: tour.metaDescription,
+    url: tourUrl,
+    image: tour.gallery.map((image) => new URL(image, site.origin).toString()),
+    touristType: tour.audience,
+    provider: { '@id': `${site.origin}/#business` },
+    itinerary: {
+      '@type': 'Place',
+      name: tour.location,
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: 'Marrakech',
+        addressCountry: 'MA',
+      },
+    },
+  },
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: site.origin },
+      { '@type': 'ListItem', position: 2, name: 'Marrakech Tours', item: new URL('/tours/', site.origin).toString() },
+      { '@type': 'ListItem', position: 3, name: tour.title, item: tourUrl },
+    ],
+  },
+  {
+    '@type': 'FAQPage',
+    mainEntity: tour.faqs.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
 ---
 
-<BaseLayout title={`${tour.title} | Atlas Quad Palmeraie`} description={tour.description} pathname={`/tours/${tour.slug}/`}>
+<BaseLayout
+  title={tour.seoTitle}
+  description={tour.metaDescription}
+  pathname={pathname}
+  image={tour.heroImage}
+  structuredData={structuredData}
+>
   <TourDetailHero tour={tour} />
 
   <section class="tour-detail-page">
@@ -30,12 +84,24 @@ const { tour } = Astro.props;
         </div>
 
         <section class="overview" aria-labelledby="overview-heading">
-          <h2 id="overview-heading" data-reveal="up">Overview</h2>
+          <h2 id="overview-heading" data-reveal="up">{tour.overviewHeading}</h2>
           <p data-reveal="up" style="--delay: 80ms">{tour.overview}</p>
         </section>
 
+        <div class="content-area">
+          <TourSeoContent tour={tour} />
+        </div>
+
         <div class="included-area" data-reveal="up">
           <TourIncludedExcluded tour={tour} />
+        </div>
+
+        <div class="faq-area">
+          <TourFaq tour={tour} />
+        </div>
+
+        <div class="related-area">
+          <RelatedTours tours={relatedTours} />
         </div>
 
         <div class="reviews-area" data-reveal="up">
@@ -64,7 +130,10 @@ const { tour } = Astro.props;
     grid-template-areas:
       "gallery booking"
       "overview booking"
+      "content booking"
       "included booking"
+      "faq booking"
+      "related booking"
       "reviews booking";
     gap: 28px;
     align-items: start;
@@ -88,6 +157,18 @@ const { tour } = Astro.props;
 
   .included-area {
     grid-area: included;
+  }
+
+  .content-area {
+    grid-area: content;
+  }
+
+  .faq-area {
+    grid-area: faq;
+  }
+
+  .related-area {
+    grid-area: related;
   }
 
   .reviews-area {
@@ -117,7 +198,10 @@ const { tour } = Astro.props;
         "gallery"
         "booking"
         "overview"
+        "content"
         "included"
+        "faq"
+        "related"
         "reviews";
     }
 

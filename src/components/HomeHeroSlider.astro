@@ -1,0 +1,303 @@
+---
+type HeroSlide = {
+  src: string;
+  label: string;
+  position?: string;
+  mobilePosition?: string;
+};
+
+type Props = {
+  slides: HeroSlide[];
+  interval?: number;
+  transitionDuration?: number;
+};
+
+const {
+  slides,
+  interval = 5500,
+  transitionDuration = 1100,
+} = Astro.props;
+
+const firstSlide = slides[0];
+---
+
+<div
+  class="hero-slider"
+  data-home-hero-slider
+  data-slides={JSON.stringify(slides)}
+  data-interval={interval}
+  data-transition-duration={transitionDuration}
+  style={`--hero-transition: ${transitionDuration}ms; --hero-interval: ${interval}ms`}
+>
+  <img
+    class="hero-slide is-active is-front"
+    src={firstSlide.src}
+    alt=""
+    width="3000"
+    height="2000"
+    fetchpriority="high"
+    decoding="async"
+    style={`--slide-position: ${firstSlide.position ?? 'center'}; --slide-position-mobile: ${firstSlide.mobilePosition ?? firstSlide.position ?? 'center'}`}
+    data-hero-slide
+    data-slide-index="0"
+  />
+  <img
+    class="hero-slide"
+    alt=""
+    width="3000"
+    height="2000"
+    decoding="async"
+    data-hero-slide
+    data-slide-index=""
+  />
+
+  <div class="hero-slider-dots" role="group" aria-label="Choose hero image">
+    {slides.map((slide, index) => (
+      <button
+        class:list={["hero-slider-dot", { "is-active": index === 0 }]}
+        type="button"
+        aria-label={`Show image ${index + 1}: ${slide.label}`}
+        aria-pressed={index === 0 ? 'true' : 'false'}
+        data-hero-dot={index}
+      >
+        <span></span>
+      </button>
+    ))}
+  </div>
+</div>
+
+<script>
+  type SliderImage = {
+    src: string;
+    label: string;
+    position?: string;
+    mobilePosition?: string;
+  };
+
+  const setupHeroSlider = (root: HTMLElement) => {
+    if (root.dataset.initialized === 'true') return;
+
+    const slides = JSON.parse(root.dataset.slides ?? '[]') as SliderImage[];
+    const imageSlots = Array.from(root.querySelectorAll<HTMLImageElement>('[data-hero-slide]'));
+    const dots = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-hero-dot]'));
+    const interval = Number(root.dataset.interval) || 5500;
+    const transitionDuration = Number(root.dataset.transitionDuration) || 1100;
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const slotVersions = imageSlots.map(() => 0);
+
+    if (slides.length < 2 || imageSlots.length < 2) return;
+
+    root.dataset.initialized = 'true';
+    let currentIndex = 0;
+    let activeSlotIndex = 0;
+    let timer: number | undefined;
+    let switching = false;
+    let queuedIndex: number | undefined;
+
+    const prepareSlot = (index: number, slotIndex: number) => {
+      const slide = slides[index];
+      if (!slide) return Promise.resolve(false);
+      const slot = imageSlots[slotIndex];
+      if (slot.dataset.slideIndex === String(index) && slot.complete && slot.naturalWidth > 0) {
+        return Promise.resolve(true);
+      }
+
+      slotVersions[slotIndex] += 1;
+      const version = slotVersions[slotIndex];
+      const request = new Promise<boolean>((resolve) => {
+        slot.onload = () => {
+          if (slotVersions[slotIndex] === version) resolve(true);
+        };
+        slot.onerror = () => {
+          if (slotVersions[slotIndex] === version) resolve(false);
+        };
+        slot.src = slide.src;
+        slot.dataset.slideIndex = String(index);
+        slot.style.setProperty('--slide-position', slide.position ?? 'center');
+        slot.style.setProperty('--slide-position-mobile', slide.mobilePosition ?? slide.position ?? 'center');
+      });
+
+      return request;
+    };
+
+    const updateDots = (index: number) => {
+      dots.forEach((dot, dotIndex) => {
+        const active = dotIndex === index;
+        dot.classList.toggle('is-active', active);
+        dot.setAttribute('aria-pressed', String(active));
+      });
+    };
+
+    const schedule = () => {
+      window.clearTimeout(timer);
+      if (reducedMotion.matches || document.hidden) return;
+      timer = window.setTimeout(() => void showSlide((currentIndex + 1) % slides.length), interval);
+    };
+
+    const showSlide = async (nextIndex: number, userInitiated = false) => {
+      const normalizedIndex = (nextIndex + slides.length) % slides.length;
+      if (normalizedIndex === currentIndex) {
+        if (userInitiated) schedule();
+        return;
+      }
+      if (switching) {
+        if (userInitiated) queuedIndex = normalizedIndex;
+        return;
+      }
+
+      switching = true;
+      window.clearTimeout(timer);
+      const nextSlotIndex = activeSlotIndex === 0 ? 1 : 0;
+      const ready = await prepareSlot(normalizedIndex, nextSlotIndex);
+      if (!ready) {
+        switching = false;
+        schedule();
+        return;
+      }
+
+      const previousSlot = imageSlots[activeSlotIndex];
+      const nextSlot = imageSlots[nextSlotIndex];
+      const instant = reducedMotion.matches;
+
+      try {
+        await nextSlot.decode();
+      } catch {
+        // The load event already confirmed the asset; decoding can reject in older browsers.
+      }
+
+      root.classList.toggle('is-instant', instant);
+      nextSlot.classList.add('is-front');
+      previousSlot.classList.remove('is-front');
+
+      requestAnimationFrame(() => {
+        nextSlot.classList.add('is-active');
+        previousSlot.classList.remove('is-active');
+      });
+
+      currentIndex = normalizedIndex;
+      activeSlotIndex = nextSlotIndex;
+      updateDots(currentIndex);
+
+      window.setTimeout(() => {
+        root.classList.remove('is-instant');
+        switching = false;
+        if (queuedIndex !== undefined && queuedIndex !== currentIndex) {
+          const requestedIndex = queuedIndex;
+          queuedIndex = undefined;
+          void showSlide(requestedIndex, true);
+          return;
+        }
+        queuedIndex = undefined;
+        void prepareSlot((currentIndex + 1) % slides.length, activeSlotIndex === 0 ? 1 : 0);
+        schedule();
+      }, instant ? 20 : transitionDuration);
+    };
+
+    dots.forEach((dot) => {
+      dot.addEventListener('click', () => {
+        const index = Number(dot.dataset.heroDot);
+        if (Number.isInteger(index)) void showSlide(index, true);
+      });
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) window.clearTimeout(timer);
+      else schedule();
+    });
+
+    reducedMotion.addEventListener('change', schedule);
+    window.addEventListener('load', () => {
+      window.setTimeout(() => {
+        if (!document.hidden && !reducedMotion.matches) void prepareSlot(1, 1);
+      }, 600);
+    }, { once: true });
+    schedule();
+  };
+
+  document.querySelectorAll<HTMLElement>('[data-home-hero-slider]').forEach(setupHeroSlider);
+</script>
+
+<style>
+  .hero-slider {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .hero-slide {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
+    object-position: var(--slide-position, center);
+    opacity: 0;
+    transform: scale(1);
+    transition: opacity var(--hero-transition) cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .hero-slide.is-front { z-index: 1; }
+
+  .hero-slide.is-active {
+    opacity: 1;
+    animation: hero-slide-drift var(--hero-interval) linear both;
+  }
+
+  .hero-slider.is-instant .hero-slide { transition: none; }
+
+  .hero-slider-dots {
+    position: absolute;
+    z-index: 4;
+    left: 50%;
+    bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateX(-50%);
+    pointer-events: auto;
+  }
+
+  .hero-slider-dot {
+    display: grid;
+    width: 28px;
+    height: 32px;
+    padding: 0;
+    place-items: center;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .hero-slider-dot span {
+    display: block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.58);
+    box-shadow: 0 0 0 1px rgba(2, 16, 42, 0.14);
+    transition: transform 220ms ease, background-color 220ms ease;
+  }
+
+  .hero-slider-dot:hover span,
+  .hero-slider-dot:focus-visible span { background: #fff; }
+  .hero-slider-dot.is-active span { background: var(--orange); transform: scale(1.28); }
+
+  @keyframes hero-slide-drift {
+    from { transform: scale(1); }
+    to { transform: scale(1.025); }
+  }
+
+  @media (max-width: 760px) {
+    .hero-slide { object-position: var(--slide-position-mobile, center); }
+    .hero-slider-dots { bottom: .7rem; }
+    .hero-slider-dot { width: 24px; height: 30px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-slide.is-active { animation: none; }
+    .hero-slide { transition: none; }
+  }
+</style>

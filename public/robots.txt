@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://atlasquadpalmeraie.com/sitemap.xml
+Sitemap: https://atlasquad.com/sitemap.xml

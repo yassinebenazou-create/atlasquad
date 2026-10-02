@@ -1,46 +1,211 @@
 ---
+import { ChevronLeft, ChevronRight, Images, X } from '@lucide/astro';
 import type { Tour } from '../data/tours';
 
 type Props = { tour: Tour };
 const { tour } = Astro.props;
+const visibleImages = tour.gallery.slice(0, 4);
+const galleryItems = tour.gallery.map((src, index) => ({
+  src,
+  alt: tour.galleryAlts?.[index] ?? `${tour.imageAlt}, gallery view ${index + 1}`,
+}));
+const galleryId = `gallery-title-${tour.slug}`;
 ---
 
-<div
-  class:list={[
-    'tour-gallery',
-    {
-      'stack-mobile': [
-        'palm-grove-2-hours-quad-bike-tour',
-        'quad-bike-camel-ride-marrakech-palmeraie',
-        'hot-air-balloon-marrakech-sunrise-atlas-view',
-        '20-minute-paragliding-transport-marrakech',
-        'camel-ride-palm-grove-marrakech',
-      ].includes(tour.slug),
-    },
-  ]}
+<section
+  class="gallery-shell"
+  data-tour-gallery
+  data-gallery-items={JSON.stringify(galleryItems)}
   aria-label={`${tour.shortTitle} photo gallery`}
 >
-  {tour.gallery.map((image, index) => (
-    <a
-      class:list={['gallery-image', { main: index === 0 }]}
-      href={image}
-      target="_blank"
-      rel="noopener"
-      aria-label={`Open gallery image ${index + 1}`}
-      data-reveal="up"
-      style={`--delay: ${index * 70}ms`}
-    >
-      <img
-        src={image}
-        alt={tour.galleryAlts?.[index] ?? `${tour.imageAlt}, gallery view ${index + 1}`}
-        loading={index === 0 ? 'eager' : 'lazy'}
-      />
-    </a>
-  ))}
-</div>
+  <div
+    class:list={[
+      'tour-gallery',
+      {
+        'stack-mobile': [
+          'palm-grove-2-hours-quad-bike-tour',
+          'quad-bike-camel-ride-marrakech-palmeraie',
+          'hot-air-balloon-marrakech-sunrise-atlas-view',
+          '20-minute-paragliding-transport-marrakech',
+          'camel-ride-palm-grove-marrakech',
+        ].includes(tour.slug),
+      },
+    ]}
+  >
+    {visibleImages.map((image, index) => (
+      <button
+        class:list={['gallery-image', { main: index === 0 }]}
+        type="button"
+        data-open-gallery
+        data-gallery-index={index}
+        aria-label={`Open photo ${index + 1} of ${tour.gallery.length}`}
+        data-reveal={index === 0 ? 'scale' : 'up'}
+        style={`--delay: ${index * 70}ms`}
+      >
+        <img
+          src={image}
+          alt={galleryItems[index].alt}
+          loading={index === 0 ? 'eager' : 'lazy'}
+          decoding="async"
+        />
+      </button>
+    ))}
+
+    <button class="view-all" type="button" data-open-gallery data-gallery-index="0" aria-haspopup="dialog">
+      <Images size={19} strokeWidth={2.2} aria-hidden="true" />
+      View all photos
+      <span>{tour.gallery.length}</span>
+    </button>
+  </div>
+
+  <dialog class="gallery-lightbox" data-gallery-dialog aria-labelledby={galleryId}>
+    <div class="lightbox-panel">
+      <header>
+        <p id={galleryId}>{tour.shortTitle}</p>
+        <button class="lightbox-close" type="button" data-gallery-close aria-label="Close photo gallery">
+          <X size={25} strokeWidth={2} aria-hidden="true" />
+        </button>
+      </header>
+
+      <div class="lightbox-stage" data-lightbox-stage>
+        <button class="lightbox-control previous" type="button" data-gallery-previous aria-label="Previous photo">
+          <ChevronLeft size={29} strokeWidth={2.2} aria-hidden="true" />
+        </button>
+
+        <figure>
+          <img data-lightbox-image alt="" decoding="async" />
+          <figcaption data-gallery-counter aria-live="polite"></figcaption>
+        </figure>
+
+        <button class="lightbox-control next" type="button" data-gallery-next aria-label="Next photo">
+          <ChevronRight size={29} strokeWidth={2.2} aria-hidden="true" />
+        </button>
+      </div>
+    </div>
+  </dialog>
+</section>
+
+<script>
+  type GalleryItem = { src: string; alt: string };
+
+  document.querySelectorAll<HTMLElement>('[data-tour-gallery]').forEach((gallery) => {
+    const dialog = gallery.querySelector<HTMLDialogElement>('[data-gallery-dialog]');
+    const image = gallery.querySelector<HTMLImageElement>('[data-lightbox-image]');
+    const counter = gallery.querySelector<HTMLElement>('[data-gallery-counter]');
+    const previous = gallery.querySelector<HTMLButtonElement>('[data-gallery-previous]');
+    const next = gallery.querySelector<HTMLButtonElement>('[data-gallery-next]');
+    const closeButton = gallery.querySelector<HTMLButtonElement>('[data-gallery-close]');
+    const stage = gallery.querySelector<HTMLElement>('[data-lightbox-stage]');
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let items: GalleryItem[] = [];
+    let currentIndex = 0;
+    let returnFocus: HTMLElement | null = null;
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let closeTimer = 0;
+
+    try {
+      items = JSON.parse(gallery.dataset.galleryItems ?? '[]') as GalleryItem[];
+    } catch {
+      items = [];
+    }
+
+    if (!dialog || !image || !counter || !items.length) return;
+
+    const showImage = (index: number) => {
+      currentIndex = (index + items.length) % items.length;
+      const item = items[currentIndex];
+      image.classList.add('is-changing');
+      image.alt = item.alt;
+      image.src = item.src;
+      counter.textContent = `${currentIndex + 1} / ${items.length}`;
+
+      const finish = () => window.requestAnimationFrame(() => image.classList.remove('is-changing'));
+      if (image.complete) finish();
+      else image.addEventListener('load', finish, { once: true });
+    };
+
+    const closeGallery = () => {
+      if (!dialog.open) return;
+      dialog.classList.remove('is-open');
+      window.clearTimeout(closeTimer);
+      closeTimer = window.setTimeout(() => dialog.close(), reducedMotion ? 0 : 220);
+    };
+
+    const openGallery = (trigger: HTMLElement, index: number) => {
+      returnFocus = trigger;
+      showImage(index);
+      dialog.showModal();
+      document.body.classList.add('gallery-open');
+      window.requestAnimationFrame(() => {
+        dialog.classList.add('is-open');
+        closeButton?.focus();
+      });
+    };
+
+    gallery.querySelectorAll<HTMLElement>('[data-open-gallery]').forEach((trigger) => {
+      trigger.addEventListener('click', () => openGallery(trigger, Number(trigger.dataset.galleryIndex ?? 0)));
+    });
+
+    previous?.addEventListener('click', () => showImage(currentIndex - 1));
+    next?.addEventListener('click', () => showImage(currentIndex + 1));
+    closeButton?.addEventListener('click', closeGallery);
+
+    dialog.addEventListener('cancel', (event) => {
+      event.preventDefault();
+      closeGallery();
+    });
+
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) closeGallery();
+    });
+
+    dialog.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        showImage(currentIndex - 1);
+      }
+      if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        showImage(currentIndex + 1);
+      }
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeGallery();
+      }
+    });
+
+    stage?.addEventListener('pointerdown', (event) => {
+      if (event.pointerType !== 'touch') return;
+      touchStartX = event.clientX;
+      touchStartY = event.clientY;
+    });
+
+    stage?.addEventListener('pointerup', (event) => {
+      if (event.pointerType !== 'touch') return;
+      const distanceX = event.clientX - touchStartX;
+      const distanceY = event.clientY - touchStartY;
+      if (Math.abs(distanceX) < 45 || Math.abs(distanceX) < Math.abs(distanceY)) return;
+      showImage(distanceX > 0 ? currentIndex - 1 : currentIndex + 1);
+    });
+
+    dialog.addEventListener('close', () => {
+      document.body.classList.remove('gallery-open');
+      image.removeAttribute('src');
+      returnFocus?.focus();
+      returnFocus = null;
+    });
+  });
+</script>
 
 <style>
+  .gallery-shell {
+    position: relative;
+    min-width: 0;
+  }
+
   .tour-gallery {
+    position: relative;
     height: clamp(470px, 38vw, 650px);
     display: grid;
     grid-template-columns: minmax(0, 1.45fr) minmax(220px, .72fr);
@@ -51,27 +216,224 @@ const { tour } = Astro.props;
   .gallery-image {
     position: relative;
     min-width: 0;
+    min-height: 0;
+    display: block;
     overflow: hidden;
+    padding: 0;
+    border: 0;
     border-radius: 10px;
     background: #edf0f2;
+    cursor: zoom-in;
   }
 
   .gallery-image.main {
     grid-row: 1 / -1;
   }
 
-  img {
+  .gallery-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     object-position: center;
-    transition: transform 450ms var(--motion-ease), opacity 300ms ease;
+    transition: transform 300ms var(--motion-ease), opacity 220ms ease;
   }
 
   .gallery-image:hover img,
   .gallery-image:focus-visible img {
-    transform: scale(1.02);
-    opacity: .96;
+    transform: scale(1.025);
+    opacity: .97;
+  }
+
+  .view-all {
+    position: absolute;
+    right: 16px;
+    bottom: 16px;
+    z-index: 3;
+    min-height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border: 1px solid rgba(255, 255, 255, .78);
+    border-radius: 6px;
+    background: rgba(5, 22, 49, .9);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(2, 13, 31, .24);
+    transition: transform 200ms var(--motion-ease), background 200ms ease, box-shadow 200ms ease;
+  }
+
+  .view-all span {
+    min-width: 24px;
+    padding-left: 8px;
+    border-left: 1px solid rgba(255, 255, 255, .35);
+    color: #ffb184;
+    text-align: center;
+  }
+
+  .view-all:hover,
+  .view-all:focus-visible {
+    transform: translateY(-2px);
+    background: #071b46;
+    box-shadow: 0 12px 26px rgba(2, 13, 31, .32);
+  }
+
+  .view-all:active {
+    transform: scale(.98);
+  }
+
+  .gallery-lightbox {
+    width: 100vw;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: rgba(2, 10, 24, .94);
+    color: #fff;
+    opacity: 0;
+    transition: opacity 240ms ease;
+  }
+
+  .gallery-lightbox[open] {
+    display: grid;
+    place-items: center;
+  }
+
+  .gallery-lightbox::backdrop {
+    background: rgba(2, 10, 24, .88);
+  }
+
+  .gallery-lightbox.is-open {
+    opacity: 1;
+  }
+
+  .lightbox-panel {
+    width: min(calc(100% - 32px), 1500px);
+    height: min(calc(100dvh - 32px), 980px);
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    border: 1px solid rgba(255, 255, 255, .12);
+    border-radius: 10px;
+    background: #041329;
+    box-shadow: 0 28px 80px rgba(0, 0, 0, .5);
+    opacity: 0;
+    transform: scale(.97);
+    transition: opacity 240ms ease, transform 240ms var(--motion-ease);
+  }
+
+  .gallery-lightbox.is-open .lightbox-panel {
+    opacity: 1;
+    transform: none;
+  }
+
+  .lightbox-panel header {
+    min-height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 10px 12px 10px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, .12);
+  }
+
+  .lightbox-panel header p {
+    margin: 0;
+    overflow: hidden;
+    font-size: 14px;
+    font-weight: 800;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .lightbox-close,
+  .lightbox-control {
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, .24);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .08);
+    color: #fff;
+    cursor: pointer;
+    transition: transform 180ms var(--motion-ease), background 180ms ease, border-color 180ms ease;
+  }
+
+  .lightbox-close {
+    width: 38px;
+    height: 38px;
+  }
+
+  .lightbox-control {
+    width: 48px;
+    height: 48px;
+  }
+
+  .lightbox-close:hover,
+  .lightbox-close:focus-visible,
+  .lightbox-control:hover,
+  .lightbox-control:focus-visible {
+    border-color: #ff6b21;
+    background: #ff6b21;
+    transform: scale(1.05);
+  }
+
+  .lightbox-control:active,
+  .lightbox-close:active {
+    transform: scale(.96);
+  }
+
+  .lightbox-stage {
+    min-width: 0;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr) 64px;
+    align-items: center;
+    gap: 12px;
+    padding: 18px;
+    touch-action: pan-y;
+  }
+
+  figure {
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    align-items: center;
+    justify-items: center;
+    gap: 12px;
+    margin: 0;
+  }
+
+  figure img {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    object-fit: contain;
+    opacity: 1;
+    transform: none;
+    transition: opacity 170ms ease, transform 170ms var(--motion-ease);
+  }
+
+  figure img.is-changing {
+    opacity: .25;
+    transform: translateX(6px);
+  }
+
+  figcaption {
+    min-height: 24px;
+    color: rgba(255, 255, 255, .78);
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  :global(body.gallery-open) {
+    overflow: hidden;
   }
 
   @media (max-width: 760px) {
@@ -107,11 +469,58 @@ const { tour } = Astro.props;
     .tour-gallery.stack-mobile .gallery-image.main {
       aspect-ratio: 4 / 3;
     }
+
+    .view-all {
+      right: 10px;
+      bottom: 10px;
+    }
+
+    .lightbox-panel {
+      width: 100%;
+      height: 100dvh;
+      border: 0;
+      border-radius: 0;
+    }
+
+    .lightbox-stage {
+      position: relative;
+      grid-template-columns: 1fr;
+      padding: 12px;
+    }
+
+    .lightbox-control {
+      position: absolute;
+      z-index: 2;
+      top: 50%;
+      width: 44px;
+      height: 44px;
+      transform: translateY(-50%);
+      background: rgba(4, 19, 41, .72);
+    }
+
+    .lightbox-control:hover,
+    .lightbox-control:focus-visible {
+      transform: translateY(-50%) scale(1.05);
+    }
+
+    .lightbox-control.previous {
+      left: 16px;
+    }
+
+    .lightbox-control.next {
+      right: 16px;
+    }
   }
 
   @media (max-width: 460px) {
     .tour-gallery {
       grid-template-rows: 245px 86px;
+    }
+
+    .view-all {
+      min-height: 38px;
+      padding: 7px 10px;
+      font-size: 12px;
     }
   }
 </style>

@@ -2,13 +2,65 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import DealsSection from '../components/DealsSection.astro';
 import FeatureBenefits from '../components/FeatureBenefits.astro';
+import HomeHeroSlider from '../components/HomeHeroSlider.astro';
 import StatsSection from '../components/StatsSection.astro';
 import { contact, site } from '../data/tours';
+
+const heroSlides = [
+  {
+    src: '/images/hero/hero-quad-sunset.jpg',
+    label: 'Quad riders crossing sunlit desert dunes',
+    position: 'center 58%',
+    mobilePosition: '50% center',
+  },
+  {
+    src: '/images/hero/hero-quad-palmeraie.jpg',
+    label: 'Quad bike overlooking Marrakech Palmeraie at sunset',
+    position: 'center',
+    mobilePosition: '68% center',
+  },
+  {
+    src: '/images/hero/hero-quad-action.jpg',
+    label: 'Quad bikes ready for a Marrakech desert adventure',
+    position: 'center 64%',
+    mobilePosition: '64% center',
+  },
+  {
+    src: '/images/hero/hero-marrakech-adventure.jpg',
+    label: 'Marrakech mountain landscape and village',
+    position: 'center',
+    mobilePosition: '34% center',
+  },
+] as const;
+
+const structuredData = [
+  {
+    '@type': 'WebSite',
+    '@id': `${site.origin}/#website`,
+    url: site.origin,
+    name: site.name,
+    publisher: { '@id': `${site.origin}/#business` },
+  },
+  {
+    '@type': 'WebPage',
+    '@id': `${site.origin}/#webpage`,
+    url: site.origin,
+    name: 'Quad Marrakech & Outdoor Activities | Atlas Quad',
+    description:
+      'Explore quad biking, camel rides and outdoor adventure activities in Marrakech Palmeraie with Atlas Quad Palmeraie.',
+    isPartOf: { '@id': `${site.origin}/#website` },
+    about: { '@id': `${site.origin}/#business` },
+  },
+];
 ---
 
-<BaseLayout title="Atlas Quad Palmeraie | Marrakech Outdoor Activities" description="Explore quad biking, camel rides and outdoor activities around Marrakech Palmeraie with Atlas Quad Palmeraie.">
+<BaseLayout
+  title="Quad Marrakech & Outdoor Activities | Atlas Quad"
+  description="Explore quad biking, camel rides and outdoor adventure activities in Marrakech Palmeraie with Atlas Quad Palmeraie."
+  structuredData={structuredData}
+>
   <section class="home-hero" aria-label="Quad bike overlooking the Marrakech Palmeraie at sunset">
-    <img class="hero-image" src="/images/hero-palmeraie-quad.png" alt="Quad bike overlooking the Marrakech Palmeraie at sunset" data-hero-image />
+    <HomeHeroSlider slides={heroSlides} />
     <div class="container hero-copy">
       <p class="hero-eyebrow" data-reveal="left" style="--delay: 80ms">ADVENTURE AWAITS</p>
       <h1 class="display" data-reveal="up" style="--delay: 160ms">Explore Marrakech <strong>Beyond the Road</strong></h1>
@@ -25,11 +77,17 @@ import { contact, site } from '../data/tours';
 
   <section id="about" class="section about">
     <div class="container about-grid">
-      <div class="about-media" data-reveal="scale"><img src={site.aboutImage} alt="Marrakech city and the Koutoubia Mosque at sunset" loading="lazy" /></div>
+      <div class="about-media" data-reveal="scale"><img src={site.aboutImage} alt="Marrakech city and the Koutoubia Mosque at sunset" loading="lazy" decoding="async" /></div>
       <div class="about-copy">
         <p class="eyebrow" data-reveal="left">Atlas Quad Palmeraie</p>
         <h2 class="display" data-reveal="up" style="--delay: 80ms">See another side of <strong>Marrakech</strong></h2>
-        <p data-reveal="up" style="--delay: 140ms">Atlas Quad Palmeraie presents outdoor activities in and around Marrakech, including quad biking, camel rides, hot air ballooning and paragliding.</p>
+        <p data-reveal="up" style="--delay: 140ms">
+          Atlas Quad Palmeraie presents outdoor activities in and around Marrakech, including
+          <a href="/tours/1-hour-quad-bike-marrakech-palmeraie/">quad biking in Marrakech Palmeraie</a>,
+          a <a href="/tours/camel-ride-palm-grove-marrakech/">camel ride through the palm grove</a>,
+          a <a href="/tours/hot-air-balloon-marrakech-sunrise-atlas-view/">sunrise hot air balloon experience</a>
+          and <a href="/tours/20-minute-paragliding-transport-marrakech/">paragliding near Marrakech</a>.
+        </p>
         <p data-reveal="up" style="--delay: 180ms">Use the tour pages to choose an activity, then contact the team for current prices, timing, availability and practical details.</p>
         <div data-reveal="up" style="--delay: 220ms"><a class="button" href="/tours/">Discover all activities</a></div>
       </div>
@@ -40,7 +98,6 @@ import { contact, site } from '../data/tours';
 <style>
   .home-hero { position: relative; width: 100%; aspect-ratio: 1672 / 940; min-height: 0; display: grid; align-items: center; overflow: hidden; color: #fff; background: #825a32; }
   .home-hero::after { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(90deg,rgba(12,12,8,.78) 0%,rgba(12,12,8,.52) 32%,rgba(12,12,8,.08) 64%,transparent); pointer-events: none; }
-  .hero-image { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: center; }
   .hero-copy { position: relative; z-index: 2; width: min(88%,1200px); padding-block: 4.5rem; background: transparent; }
   .hero-eyebrow { display: flex; align-items: center; gap: 1rem; margin: 0 0 .9rem; font-size: .78rem; font-weight: 800; letter-spacing: .28em; text-transform: uppercase; }
   .hero-eyebrow::after { content: ""; width: 2rem; height: 2px; background: var(--orange); }
@@ -56,12 +113,13 @@ import { contact, site } from '../data/tours';
   .about-media img { width: 100%; height: 100%; object-fit: cover; object-position: center; border-radius: 10px; display: block; }
   .about-copy .display { margin: .8rem 0 1.5rem; font-size: clamp(2.4rem,5vw,4.2rem); }
   .about-copy > p:not(.eyebrow) { color: var(--ink-soft); font-size: 1.02rem; line-height: 1.75; }
+  .about-copy > p a { color: var(--ink); font-weight: 750; text-decoration: underline; text-decoration-color: rgba(255,107,33,.5); text-underline-offset: 3px; }
+  .about-copy > p a:hover, .about-copy > p a:focus-visible { color: var(--orange-dark); text-decoration-color: currentColor; }
   .about-copy .button { margin-top: .8rem; }
   @media (max-width: 900px) { .about-grid { grid-template-columns: 1fr; } .about-media { height: 400px; } }
   @media (max-width: 760px) {
     .home-hero { aspect-ratio: auto; min-height: calc(100svh - 86px); }
     .home-hero::after { background: linear-gradient(180deg,rgba(3,16,38,.12),rgba(3,16,38,.78)); }
-    .hero-image { object-position: 62% center; }
     .hero-copy { align-self: end; width: min(100% - 1.25rem,42rem); padding-block: 5rem 4rem; }
     .hero-copy .display { max-width: 12ch; font-size: clamp(2.8rem,13vw,4.25rem); }
     .hero-copy .display strong { display: block; }

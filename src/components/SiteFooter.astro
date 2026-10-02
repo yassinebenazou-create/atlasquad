@@ -4,10 +4,14 @@ import { siFacebook, siInstagram, siX, siYoutube } from 'simple-icons';
 import { contact, site } from '../data/tours';
 
 const socialIcons = [
-  { name: 'Facebook', icon: siFacebook },
-  { name: 'YouTube', icon: siYoutube },
-  { name: 'X', icon: siX },
-  { name: 'Instagram', icon: siInstagram },
+  { name: 'Facebook', icon: siFacebook, href: 'https://www.facebook.com/share/1JqPmPaaei/' },
+  { name: 'YouTube', icon: siYoutube, href: null },
+  { name: 'X', icon: siX, href: null },
+  {
+    name: 'Instagram',
+    icon: siInstagram,
+    href: 'https://www.instagram.com/atlas_quad_palmeraie?utm_source=qr&igsh=MXV2ZnMwMGdrbXQ4aw==',
+  },
 ];
 ---
 
@@ -16,7 +20,7 @@ const socialIcons = [
     <div class="footer-container footer-grid">
       <div class="brand-column" data-reveal="up">
         <a class="footer-logo" href="/" aria-label="Atlas Quad Palmeraie home">
-          <img src={site.logo} alt="Atlas Quad Palmeraie logo" />
+          <img src={site.logo} alt="Atlas Quad Palmeraie logo" loading="lazy" decoding="async" />
         </a>
         <p>Experience the wild beauty of Marrakech with Atlas Quad. Ride through palm groves, deserts, valleys and trails on our guided quad and camel adventures.</p>
       </div>
@@ -43,10 +47,23 @@ const socialIcons = [
       <div class="social-column" data-reveal="up" style="--delay: 240ms">
         <h2>Follow us</h2>
         <div class="social-list">
-          {socialIcons.map(({ name, icon }) => (
-            <span class="social-button" role="img" aria-label={name} title={name}>
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d={icon.path}></path></svg>
-            </span>
+          {socialIcons.map(({ name, icon, href }) => (
+            href ? (
+              <a
+                class="social-button"
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Visit Atlas Quad Palmeraie on ${name}`}
+                title={name}
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d={icon.path}></path></svg>
+              </a>
+            ) : (
+              <span class="social-button" role="img" aria-label={name} title={name}>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d={icon.path}></path></svg>
+              </span>
+            )
           ))}
         </div>
       </div>

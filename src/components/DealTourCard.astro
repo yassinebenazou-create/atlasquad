@@ -8,7 +8,7 @@ const { deal } = Astro.props;
 
 <article class="deal-card">
   <a class="deal-image" href={deal.href} aria-label={`Explore ${deal.title}`}>
-    <img src={deal.image} alt={deal.imageAlt} loading="lazy" onerror="this.remove()" />
+    <img src={deal.image} alt={deal.imageAlt} loading="lazy" decoding="async" onerror="this.remove()" />
     {deal.badge && <span class="deal-badge"><Flame size={15} fill="currentColor" strokeWidth={2.2} />{deal.badge}</span>}
   </a>
   <div class="deal-content">
@@ -55,7 +55,7 @@ const { deal } = Astro.props;
   }
 
   .deal-card:hover .deal-image img {
-    transform: scale(1.04);
+    transform: scale(1.035);
   }
 
   .deal-badge {

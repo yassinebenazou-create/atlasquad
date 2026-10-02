@@ -4,16 +4,55 @@ import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import FloatingWhatsApp from '../components/FloatingWhatsApp.astro';
 import MotionObserver from '../components/MotionObserver.astro';
-import { site } from '../data/tours';
+import { googleBusiness } from '../data/contact';
+import { contact, site } from '../data/tours';
 
 type Props = {
   title: string;
   description: string;
   pathname?: string;
+  image?: string;
+  structuredData?: Array<Record<string, unknown>>;
 };
 
-const { title, description, pathname = Astro.url.pathname } = Astro.props;
+const {
+  title,
+  description,
+  pathname = Astro.url.pathname,
+  image = site.heroImage,
+  structuredData = [],
+} = Astro.props;
 const canonical = new URL(pathname, site.origin).toString();
+const socialImage = new URL(image, site.origin).toString();
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'LocalBusiness',
+      '@id': `${site.origin}/#business`,
+      name: site.name,
+      url: site.origin,
+      logo: new URL(site.logo, site.origin).toString(),
+      image: new URL(site.heroImage, site.origin).toString(),
+      telephone: contact.phone,
+      email: contact.email,
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: 'Palmeraie',
+        addressLocality: 'Marrakech',
+        addressCountry: 'MA',
+      },
+      geo: {
+        '@type': 'GeoCoordinates',
+        latitude: googleBusiness.latitude,
+        longitude: googleBusiness.longitude,
+      },
+      hasMap: googleBusiness.mapsUrl,
+      openingHours: 'Mo-Su 08:00-19:00',
+    },
+    ...structuredData,
+  ],
+};
 ---
 
 <!doctype html>
@@ -25,12 +64,21 @@ const canonical = new URL(pathname, site.origin).toString();
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:image" content={socialImage} />
+    <meta property="og:image:alt" content={`${site.name} in Marrakech Palmeraie`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImage} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)}></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>

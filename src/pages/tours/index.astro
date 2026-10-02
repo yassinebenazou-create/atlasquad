@@ -4,12 +4,37 @@ import ToursFilterSidebar from '../../components/ToursFilterSidebar.astro';
 import ToursHero from '../../components/ToursHero.astro';
 import ToursListingCard from '../../components/ToursListingCard.astro';
 import ToursToolbar from '../../components/ToursToolbar.astro';
-import { tourListings } from '../../data/tours';
+import { site, tourListings } from '../../data/tours';
+
+const toursUrl = new URL('/tours/', site.origin).toString();
+const structuredData = [
+  {
+    '@type': 'CollectionPage',
+    '@id': `${toursUrl}#collection`,
+    url: toursUrl,
+    name: 'Marrakech Tours & Activities',
+    description:
+      'Compare quad bike, camel ride, hot air balloon and paragliding activities in Marrakech and the Palmeraie.',
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: tourListings.length,
+      itemListElement: tourListings.map((tour, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: tour.title,
+        url: new URL(`/tours/${tour.slug}/`, site.origin).toString(),
+      })),
+    },
+  },
+];
 ---
 
 <BaseLayout
   title="Marrakech Tours & Activities | Atlas Quad Palmeraie"
-  description="Explore quad bike, camel ride, hot air balloon and paragliding activities in Marrakech and the Palmeraie."
+  description="Compare Marrakech tours and activities, including quad biking, camel rides, hot air ballooning and paragliding in and around the Palmeraie."
+  pathname="/tours/"
+  image="/images/tours/tours-hero-marrakech.jpg"
+  structuredData={structuredData}
 >
   <ToursHero />
 
