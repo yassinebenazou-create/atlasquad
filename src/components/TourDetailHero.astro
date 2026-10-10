@@ -4,6 +4,7 @@ import type { Tour } from '../data/tours';
 
 type Props = { tour: Tour };
 const { tour } = Astro.props;
+const rating = tour.rating ?? 5;
 ---
 
 <section class="tour-hero" aria-labelledby="tour-title">
@@ -14,9 +15,11 @@ const { tour } = Astro.props;
       <a href="/">Home</a><span>/</span><a href="/tours/">Tours</a><span>/</span><span aria-current="page">{tour.shortTitle}</span>
     </nav>
     <h1 id="tour-title" data-reveal="up" style="--delay: 160ms">{tour.title}</h1>
-    <div class="tour-rating" aria-label="5 out of 5 stars" data-reveal="up" style="--delay: 240ms">
-      {Array.from({ length: 5 }, () => <Star size={21} strokeWidth={2.2} fill="currentColor" />)}
-    </div>
+    {rating > 0 && (
+      <div class="tour-rating" aria-label={`${rating} out of 5 stars`} data-reveal="up" style="--delay: 240ms">
+        {Array.from({ length: rating }, () => <Star size={21} strokeWidth={2.2} fill="currentColor" />)}
+      </div>
+    )}
     <p data-reveal="up" style="--delay: 320ms">{tour.description}</p>
   </div>
 </section>

@@ -13,8 +13,9 @@ const structuredData = [
     '@id': `${toursUrl}#collection`,
     url: toursUrl,
     name: 'Marrakech Tours & Activities',
+    inLanguage: 'en',
     description:
-      'Compare quad bike, camel ride, hot air balloon and paragliding activities in Marrakech and the Palmeraie.',
+      'Compare quad biking, Can-Am buggy, motocross, camel ride, hot air balloon and paragliding activities in Marrakech.',
     mainEntity: {
       '@type': 'ItemList',
       numberOfItems: tourListings.length,
@@ -26,14 +27,22 @@ const structuredData = [
       })),
     },
   },
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: site.origin },
+      { '@type': 'ListItem', position: 2, name: 'Marrakech Tours', item: toursUrl },
+    ],
+  },
 ];
 ---
 
 <BaseLayout
-  title="Marrakech Tours & Activities | Atlas Quad Palmeraie"
-  description="Compare Marrakech tours and activities, including quad biking, camel rides, hot air ballooning and paragliding in and around the Palmeraie."
+  title="Marrakech Tours: Quad, Buggy & Activities | Atlas Quad"
+  description="Compare quad biking, Can-Am buggy, motocross, camel ride, hot air balloon and paragliding activities in Marrakech, with prices and WhatsApp enquiries."
   pathname="/tours/"
   image="/images/tours/tours-hero-marrakech.jpg"
+  imageAlt="Quad bike riders exploring Marrakech Palmeraie at sunset"
   structuredData={structuredData}
 >
   <ToursHero />
@@ -53,7 +62,7 @@ const structuredData = [
               data-index={index}
               data-title={tour.title}
               data-price={tour.price}
-              data-rating={tour.rating}
+              data-rating={tour.rating ?? 0}
               data-destination={tour.destination}
               data-activities={tour.activities.join('|')}
             >

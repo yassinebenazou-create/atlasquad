@@ -26,10 +26,11 @@ const structuredData = [
     '@type': 'TouristTrip',
     '@id': `${tourUrl}#tour`,
     name: tour.title,
+    inLanguage: 'en',
     description: tour.metaDescription,
     url: tourUrl,
+    mainEntityOfPage: tourUrl,
     image: tour.gallery.map((image) => new URL(image, site.origin).toString()),
-    touristType: tour.audience,
     provider: { '@id': `${site.origin}/#business` },
     itinerary: {
       '@type': 'Place',
@@ -49,17 +50,6 @@ const structuredData = [
       { '@type': 'ListItem', position: 3, name: tour.title, item: tourUrl },
     ],
   },
-  {
-    '@type': 'FAQPage',
-    mainEntity: tour.faqs.map((item) => ({
-      '@type': 'Question',
-      name: item.question,
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: item.answer,
-      },
-    })),
-  },
 ];
 ---
 
@@ -68,6 +58,7 @@ const structuredData = [
   description={tour.metaDescription}
   pathname={pathname}
   image={tour.heroImage}
+  imageAlt={tour.imageAlt}
   structuredData={structuredData}
 >
   <TourDetailHero tour={tour} />

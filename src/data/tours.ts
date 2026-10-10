@@ -27,6 +27,7 @@ export type Tour = {
     answer: string;
   }>;
   relatedSlugs: string[];
+  rating?: number;
 };
 
 export type FeaturedDeal = {
@@ -45,13 +46,14 @@ export type TourListingItem = {
   title: string;
   image: string;
   imageAlt: string;
+  imagePosition?: string;
   duration: string;
   audience: string;
   price: number;
   priceLabel: string;
-  rating: number;
+  rating?: number;
   destination: 'La palmeraie' | 'Marrakesh';
-  activities: Array<'Quad Bike' | 'Camel Ride' | 'Hot Air Balloon' | 'Paragliding'>;
+  activities: Array<'Quad Bike' | 'Camel Ride' | 'Hot Air Balloon' | 'Paragliding' | 'Can-Am XRS' | 'Moto Cross'>;
 };
 
 export const contact = {
@@ -68,6 +70,10 @@ export const site = {
   logo: '/images/logo.png',
   heroImage: '/images/hero/hero-quad-sunset.jpg',
   aboutImage: '/images/marrakech-sunset.jpg',
+  socialProfiles: [
+    'https://www.facebook.com/share/1JqPmPaaei/',
+    'https://www.instagram.com/atlas_quad_palmeraie',
+  ],
 };
 
 const extraTourGallery = {
@@ -149,7 +155,7 @@ export const featuredDeals: FeaturedDeal[] = [
     imageAlt: 'Hot air balloon flight over Marrakech at sunrise',
     duration: '3 Hours',
     audience: 'Includes Transport',
-    price: '€70.00',
+    price: '€80.00',
     href: '/tours/hot-air-balloon-marrakech-sunrise-atlas-view/',
   },
 ];
@@ -188,8 +194,8 @@ export const tourListings: TourListingItem[] = [
     imageAlt: 'Hot air balloon flight over Marrakech at sunrise',
     duration: '20 Minutes',
     audience: 'Includes Transport',
-    price: 140,
-    priceLabel: '\u20AC140.00',
+    price: 80,
+    priceLabel: '\u20AC80.00',
     rating: 5,
     destination: 'Marrakesh',
     activities: ['Hot Air Balloon'],
@@ -233,6 +239,31 @@ export const tourListings: TourListingItem[] = [
     destination: 'Marrakesh',
     activities: ['Paragliding'],
   },
+  {
+    slug: 'can-am-xrs-off-road-adventure-marrakech',
+    title: 'Marrakech Can-Am XRS Off-Road Adventure',
+    image: '/images/tours/can-am-xrs-buggy-tour-marrakech.webp',
+    imageAlt: 'Can-Am XRS buggy off-road adventure tour in Marrakech, Morocco.',
+    duration: 'To be confirmed',
+    audience: 'Contact for details',
+    price: 130,
+    priceLabel: '\u20AC130.00',
+    destination: 'Marrakesh',
+    activities: ['Can-Am XRS'],
+  },
+  {
+    slug: 'motocross-off-road-adventure-marrakech',
+    title: 'Marrakech Motocross Off-Road Adventure',
+    image: '/images/tours/motocross-adventure-tour-marrakech.webp',
+    imageAlt: 'Motocross off-road adventure experience in Marrakech, Morocco.',
+    imagePosition: 'center 24%',
+    duration: 'To be confirmed',
+    audience: 'Contact for details',
+    price: 80,
+    priceLabel: '\u20AC80.00',
+    destination: 'Marrakesh',
+    activities: ['Moto Cross'],
+  },
 ];
 
 export const tours: Tour[] = [
@@ -274,13 +305,13 @@ export const tours: Tour[] = [
       '1-hour quad biking',
       'Comprehensive insurance',
     ],
-    seoTitle: '1 Hour Quad Bike Marrakech Palmeraie | Atlas Quad',
+    seoTitle: 'Quad Marrakech Palmeraie: 1-Hour Tour | Atlas Quad',
     metaDescription:
-      'Explore Marrakech Palmeraie on a 1-hour quad bike activity with a professional guide, safety equipment and transport listed as included.',
+      'Ride a quad bike through Marrakech Palmeraie for 1 hour from \u20AC15, with a guide, safety equipment and listed transport. Request availability on WhatsApp.',
     overviewHeading: '1-hour quad biking in Marrakech Palmeraie',
     contentSections: [
       {
-        heading: 'A guided Marrakech quad experience',
+        heading: 'A guided quad bike tour in Marrakech Palmeraie',
         paragraphs: [
           'This one-hour quad bike activity follows palm-grove paths, desert tracks and open landscapes in Marrakech Palmeraie. A professional guide leads the outing after a safety orientation.',
           'The activity is listed for all levels, including beginners and experienced riders. A quad bike, helmet and goggles are included in the tour information.',
@@ -349,7 +380,7 @@ export const tours: Tour[] = [
       ...extraTourGalleryAlts.quadCamel,
     ],
     imageAlt: 'Quad bike and camel ride in Marrakech Palmeraie',
-    seoTitle: 'Quad & Camel Ride Marrakech | Atlas Quad Palmeraie',
+    seoTitle: 'Quad Biking & Camel Ride Marrakech | Atlas Quad',
     metaDescription:
       'Combine quad biking and a camel ride in a 2-hour Marrakech Palmeraie experience for couples and groups. Contact Atlas Quad for current details.',
     overviewHeading: 'Quad and camel ride in Marrakech Palmeraie',
@@ -405,7 +436,7 @@ export const tours: Tour[] = [
     location: 'Marrakech',
     activityTypes: ['Hot Air Balloon'],
     audience: 'Includes transport',
-    priceLabel: 'Contact for price',
+    priceLabel: '\u20AC80.00',
     heroImage: '/images/tours/hot-air-balloon-marrakech.jpg',
     cardImage: '/images/tours/hot-air-balloon-marrakech.jpg',
     gallery: [
@@ -567,9 +598,9 @@ export const tours: Tour[] = [
       ...extraTourGalleryAlts.quad2Hours,
     ],
     imageAlt: 'Quad biking in Marrakech Palmeraie',
-    seoTitle: '2 Hour Quad Tour Marrakech | Atlas Quad Palmeraie',
+    seoTitle: 'Quad Marrakech Palmeraie: 2-Hour Tour | Atlas Quad',
     metaDescription:
-      'Explore Marrakech Palmeraie on a longer 2-hour quad bike tour. Contact Atlas Quad to confirm the current route, requirements and price.',
+      'Explore Marrakech Palmeraie on a 2-hour quad bike tour. Contact Atlas Quad on WhatsApp to confirm the current route, requirements, price and availability.',
     overviewHeading: '2-hour quad tour in Marrakech Palmeraie',
     contentSections: [
       {
@@ -683,6 +714,154 @@ export const tours: Tour[] = [
       '1-hour-quad-bike-marrakech-palmeraie',
       'quad-bike-camel-ride-marrakech-palmeraie',
     ],
+  },
+  {
+    slug: 'can-am-xrs-off-road-adventure-marrakech',
+    title: 'Marrakech Can-Am XRS Off-Road Adventure',
+    shortTitle: 'Can-Am XRS Off-Road Adventure',
+    description: 'Explore Marrakech terrain in a Can-Am XRS buggy and contact Atlas Quad Palmeraie to confirm the route, timing and availability.',
+    overview:
+      'Take on Marrakech terrain in a Can-Am XRS buggy adventure. Contact Atlas Quad Palmeraie to confirm the current route, duration, participation requirements and booking conditions for your preferred date.',
+    duration: 'To be confirmed',
+    location: 'Marrakech',
+    activityTypes: ['Can-Am XRS'],
+    audience: 'Contact for details',
+    priceLabel: '\u20AC130.00',
+    heroImage: '/images/tours/can-am-xrs-buggy-tour-marrakech.webp',
+    cardImage: '/images/tours/can-am-xrs-buggy-tour-marrakech.webp',
+    gallery: [
+      '/images/tours/can-am-xrs-buggy-tour-marrakech.webp',
+      '/images/tours/can-am-maverick-desert-adventure.webp',
+      '/images/tours/off-road-buggy-dirt-track-action.webp',
+      '/images/tours/can-am-xrs-trail-front-view.webp',
+      '/images/tours/can-am-xrs-desert-dunes.webp',
+      '/images/tours/can-am-buggy-camel-trail.webp',
+      '/images/tours/can-am-tour-atlas-mountains.webp',
+    ],
+    galleryAlts: [
+      'Can-Am XRS buggy off-road adventure tour in Marrakech, Morocco.',
+      'Blue Can-Am Maverick driving across desert dunes',
+      'Orange off-road buggy cornering on a dirt track',
+      'Can-Am XRS approaching along a wooded trail',
+      'Can-Am XRS crossing open desert dunes',
+      'Can-Am buggies following a camel caravan on a mountain trail',
+      'Travelers with Can-Am buggies facing the Atlas Mountains',
+    ],
+    imageAlt: 'Can-Am XRS buggy off-road adventure tour in Marrakech, Morocco.',
+    seoTitle: 'Can-Am Marrakech XRS Buggy Adventure | Atlas Quad',
+    metaDescription:
+      'Experience a Can-Am XRS buggy adventure in Marrakech from \u20AC130. View the gallery and contact Atlas Quad on WhatsApp to confirm route and availability.',
+    overviewHeading: 'Can-Am XRS buggy adventure in Marrakech',
+    contentSections: [
+      {
+        heading: 'Explore Marrakech by Can-Am XRS buggy',
+        paragraphs: [
+          'Experience the Marrakech landscape from a Can-Am XRS on an off-road outing arranged through Atlas Quad Palmeraie.',
+          'The exact route and duration are pending confirmation. Contact the team before making plans for your preferred date.',
+        ],
+      },
+      {
+        heading: 'Confirm your adventure details',
+        paragraphs: [
+          'Use the booking panel to send your preferred date and guest count directly to Atlas Quad Palmeraie on WhatsApp.',
+          'The team will confirm current availability, participation requirements, included services and booking conditions before the activity is arranged.',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'How long is the Can-Am XRS adventure?',
+        answer: 'The duration is pending confirmation. Ask the Atlas Quad Palmeraie team for the current schedule before booking.',
+      },
+      {
+        question: 'What is included with the Can-Am XRS activity?',
+        answer: 'Included services and booking conditions have not been published. The team will confirm the current details through WhatsApp.',
+      },
+      {
+        question: 'How do I request availability?',
+        answer: 'Choose a date and guest count in the booking panel to send an availability enquiry through WhatsApp.',
+      },
+    ],
+    relatedSlugs: [
+      'motocross-off-road-adventure-marrakech',
+      'palm-grove-2-hours-quad-bike-tour',
+      '1-hour-quad-bike-marrakech-palmeraie',
+    ],
+    rating: 0,
+  },
+  {
+    slug: 'motocross-off-road-adventure-marrakech',
+    title: 'Marrakech Motocross Off-Road Adventure',
+    shortTitle: 'Motocross Off-Road Adventure',
+    description: 'Explore Marrakech terrain on a motocross off-road adventure and contact Atlas Quad Palmeraie to confirm timing and availability.',
+    overview:
+      'Discover the open landscape around Marrakech on a motocross adventure. Contact Atlas Quad Palmeraie to confirm the current route, duration, participation requirements and booking conditions for your preferred date.',
+    duration: 'To be confirmed',
+    location: 'Marrakech',
+    activityTypes: ['Moto Cross'],
+    audience: 'Contact for details',
+    priceLabel: '\u20AC80.00',
+    heroImage: '/images/tours/motocross-adventure-tour-marrakech.webp',
+    cardImage: '/images/tours/motocross-adventure-tour-marrakech.webp',
+    gallery: [
+      '/images/tours/motocross-adventure-tour-marrakech.webp',
+      '/images/tours/motocross-desert-adventure.webp',
+      '/images/tours/motocross-off-road-action.webp',
+      '/images/tours/motocross-dirt-track-riding.webp',
+      '/images/tours/motocross-sunset-adventure.webp',
+      '/images/tours/motocross-off-road-trail.webp',
+      '/images/tours/motocross-riders-atlas-mountains.webp',
+    ],
+    galleryAlts: [
+      'Motocross off-road adventure experience in Marrakech, Morocco.',
+      'Motocross rider carving through desert terrain',
+      'Motocross rider leaning into an off-road turn',
+      'Motocross rider crossing a red dirt track',
+      'Motocross rider throwing sand at sunset',
+      'Two motocross riders on a rocky open trail',
+      'Two motocross riders beside a lake with the Atlas Mountains behind them',
+    ],
+    imageAlt: 'Motocross off-road adventure experience in Marrakech, Morocco.',
+    seoTitle: 'Motocross Marrakech Off-Road Adventure | Atlas Quad',
+    metaDescription:
+      'Discover a motocross Marrakech off-road adventure from \u20AC80. View the gallery and contact Atlas Quad on WhatsApp to confirm route, timing and availability.',
+    overviewHeading: 'Motocross Marrakech off-road adventure',
+    contentSections: [
+      {
+        heading: 'A motocross adventure in Marrakech',
+        paragraphs: [
+          'Take in the Marrakech landscape on a motocross off-road experience arranged through Atlas Quad Palmeraie.',
+          'The exact route and duration are pending confirmation. Contact the team before making plans for your preferred date.',
+        ],
+      },
+      {
+        heading: 'Request the current activity details',
+        paragraphs: [
+          'Use the booking panel to send your preferred date and guest count directly to Atlas Quad Palmeraie on WhatsApp.',
+          'The team will confirm current availability, participation requirements, included services and booking conditions before the activity is arranged.',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'How long is the motocross adventure?',
+        answer: 'The duration is pending confirmation. Ask the Atlas Quad Palmeraie team for the current schedule before booking.',
+      },
+      {
+        question: 'What is included with the motocross activity?',
+        answer: 'Included services and booking conditions have not been published. The team will confirm the current details through WhatsApp.',
+      },
+      {
+        question: 'How do I request availability?',
+        answer: 'Choose a date and guest count in the booking panel to send an availability enquiry through WhatsApp.',
+      },
+    ],
+    relatedSlugs: [
+      'can-am-xrs-off-road-adventure-marrakech',
+      'palm-grove-2-hours-quad-bike-tour',
+      '1-hour-quad-bike-marrakech-palmeraie',
+    ],
+    rating: 0,
   },
 ];
 

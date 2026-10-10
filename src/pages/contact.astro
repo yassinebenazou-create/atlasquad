@@ -15,17 +15,26 @@ const structuredData = [
     '@id': `${contactUrl}#contact`,
     url: contactUrl,
     name: 'Contact Atlas Quad Palmeraie in Marrakech',
-    description: 'Phone, WhatsApp, email and map details for Atlas Quad Palmeraie in Marrakech, Morocco.',
+    inLanguage: 'en',
+    description: 'Contact Atlas Quad Palmeraie in Marrakech by phone, WhatsApp or email, view the map and ask about current tour availability.',
     about: { '@id': `${site.origin}/#business` },
+  },
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: site.origin },
+      { '@type': 'ListItem', position: 2, name: 'Contact', item: contactUrl },
+    ],
   },
 ];
 ---
 
 <BaseLayout
   title="Contact Atlas Quad Palmeraie | Marrakech"
-  description="Contact Atlas Quad Palmeraie by phone, WhatsApp or email and find our location in Marrakech Palmeraie."
+  description="Contact Atlas Quad Palmeraie in Marrakech by phone, WhatsApp or email, view the map and ask about current tour availability."
   pathname="/contact/"
   image="/images/tours/tours-hero-marrakech.jpg"
+  imageAlt="Quad riders travelling through Marrakech Palmeraie at sunset"
   structuredData={structuredData}
 >
   <ContactHero />

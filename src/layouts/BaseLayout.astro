@@ -12,6 +12,7 @@ type Props = {
   description: string;
   pathname?: string;
   image?: string;
+  imageAlt?: string;
   structuredData?: Array<Record<string, unknown>>;
 };
 
@@ -20,10 +21,14 @@ const {
   description,
   pathname = Astro.url.pathname,
   image = site.heroImage,
+  imageAlt = `${site.name} outdoor activities in Marrakech`,
   structuredData = [],
 } = Astro.props;
 const canonical = new URL(pathname, site.origin).toString();
 const socialImage = new URL(image, site.origin).toString();
+const favicon96 = new URL('/favicon-96x96.png', site.origin).toString();
+const appleTouchIcon = new URL('/apple-touch-icon.png', site.origin).toString();
+const socialImageType = image.endsWith('.webp') ? 'image/webp' : image.endsWith('.png') ? 'image/png' : 'image/jpeg';
 const schema = {
   '@context': 'https://schema.org',
   '@graph': [
@@ -48,7 +53,13 @@ const schema = {
         longitude: googleBusiness.longitude,
       },
       hasMap: googleBusiness.mapsUrl,
-      openingHours: 'Mo-Su 08:00-19:00',
+      openingHoursSpecification: {
+        '@type': 'OpeningHoursSpecification',
+        dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+        opens: '08:00',
+        closes: '19:00',
+      },
+      sameAs: site.socialProfiles,
     },
     ...structuredData,
   ],
@@ -63,25 +74,30 @@ const schema = {
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
+    <meta name="theme-color" content="#071b46" />
     <link rel="canonical" href={canonical} />
-    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="96x96" href={favicon96} />
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
-    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
     <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
-    <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" href={appleTouchIcon} />
     <link rel="manifest" href="/site.webmanifest" />
+    <link rel="preload" as="image" href={socialImage} fetchpriority="high" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
     <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content="en_US" />
     <meta property="og:image" content={socialImage} />
-    <meta property="og:image:alt" content={`${site.name} in Marrakech Palmeraie`} />
+    <meta property="og:image:secure_url" content={socialImage} />
+    <meta property="og:image:type" content={socialImageType} />
+    <meta property="og:image:alt" content={imageAlt} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={socialImage} />
+    <meta name="twitter:image:alt" content={imageAlt} />
     <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)}></script>
   </head>
   <body>

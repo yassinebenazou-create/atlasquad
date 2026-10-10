@@ -26,6 +26,8 @@ const reviewRows = [5, 4, 3, 2, 1];
         <option value="Camel Ride">Camel Ride</option>
         <option value="Hot Air Balloon">Hot Air Balloon</option>
         <option value="Paragliding">Paragliding</option>
+        <option value="Can-Am XRS">Can-Am XRS</option>
+        <option value="Moto Cross">Moto Cross</option>
       </select>
     </label>
     <label class="quick-field">
@@ -54,7 +56,7 @@ const reviewRows = [5, 4, 3, 2, 1];
 
   <fieldset>
     <legend>Activity</legend>
-    {['Quad Bike', 'Camel Ride', 'Hot Air Balloon', 'Paragliding'].map((activity) => (
+    {['Quad Bike', 'Camel Ride', 'Hot Air Balloon', 'Paragliding', 'Can-Am XRS', 'Moto Cross'].map((activity) => (
       <label><input type="checkbox" name="activity" value={activity} /> <span>{activity}</span></label>
     ))}
   </fieldset>

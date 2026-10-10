@@ -22,6 +22,7 @@ const galleryId = `gallery-title-${tour.slug}`;
     class:list={[
       'tour-gallery',
       {
+        'single-image': visibleImages.length === 1,
         'stack-mobile': [
           'palm-grove-2-hours-quad-bike-tour',
           'quad-bike-camel-ride-marrakech-palmeraie',
@@ -228,6 +229,15 @@ const galleryId = `gallery-title-${tour.slug}`;
 
   .gallery-image.main {
     grid-row: 1 / -1;
+  }
+
+  .tour-gallery.single-image {
+    display: block;
+  }
+
+  .tour-gallery.single-image .gallery-image {
+    width: 100%;
+    height: 100%;
   }
 
   .gallery-image img {

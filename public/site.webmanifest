@@ -1,6 +1,9 @@
 {
   "name": "Atlas Quad Palmeraie",
   "short_name": "Atlas Quad",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
   "icons": [
     {
       "src": "/favicon-192x192.png",

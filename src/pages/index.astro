@@ -39,6 +39,8 @@ const structuredData = [
     '@id': `${site.origin}/#website`,
     url: site.origin,
     name: site.name,
+    alternateName: 'Atlas Quad',
+    inLanguage: 'en',
     publisher: { '@id': `${site.origin}/#business` },
   },
   {
@@ -47,7 +49,8 @@ const structuredData = [
     url: site.origin,
     name: 'Quad Marrakech & Outdoor Activities | Atlas Quad',
     description:
-      'Explore quad biking, camel rides and outdoor adventure activities in Marrakech Palmeraie with Atlas Quad Palmeraie.',
+      'Explore quad biking in Marrakech Palmeraie, Can-Am buggy, motocross and camel ride adventures. Compare prices and request availability on WhatsApp.',
+    inLanguage: 'en',
     isPartOf: { '@id': `${site.origin}/#website` },
     about: { '@id': `${site.origin}/#business` },
   },
@@ -56,15 +59,16 @@ const structuredData = [
 
 <BaseLayout
   title="Quad Marrakech & Outdoor Activities | Atlas Quad"
-  description="Explore quad biking, camel rides and outdoor adventure activities in Marrakech Palmeraie with Atlas Quad Palmeraie."
+  description="Explore quad biking in Marrakech Palmeraie, Can-Am buggy, motocross and camel ride adventures. Compare prices and request availability on WhatsApp."
+  imageAlt="Quad riders crossing desert trails near Marrakech"
   structuredData={structuredData}
 >
   <section class="home-hero" aria-label="Quad bike overlooking the Marrakech Palmeraie at sunset">
     <HomeHeroSlider slides={heroSlides} />
     <div class="container hero-copy">
       <p class="hero-eyebrow" data-reveal="left" style="--delay: 80ms">ADVENTURE AWAITS</p>
-      <h1 class="display" data-reveal="up" style="--delay: 160ms">Explore Marrakech <strong>Beyond the Road</strong></h1>
-      <p data-reveal="up" style="--delay: 240ms">Ride through palm groves, cross desert trails and discover the authentic beauty of Marrakech with Atlas Quad Palmeraie.</p>
+      <h1 class="display" data-reveal="up" style="--delay: 160ms">Quad Marrakech <strong>Beyond the Road</strong></h1>
+      <p data-reveal="up" style="--delay: 240ms">Ride quad bikes through palm groves and desert trails, then discover Can-Am, motocross, camel rides and more with Atlas Quad Palmeraie.</p>
       <div class="hero-actions" data-reveal="up" style="--delay: 320ms"><a class="button" href="/tours/">Explore tours <span aria-hidden="true">&rarr;</span></a><a class="button secondary" href={contact.whatsappHref} target="_blank" rel="noreferrer">Contact us <span aria-hidden="true">&#9673;</span></a></div>
     </div>
   </section>
@@ -86,7 +90,9 @@ const structuredData = [
           <a href="/tours/1-hour-quad-bike-marrakech-palmeraie/">quad biking in Marrakech Palmeraie</a>,
           a <a href="/tours/camel-ride-palm-grove-marrakech/">camel ride through the palm grove</a>,
           a <a href="/tours/hot-air-balloon-marrakech-sunrise-atlas-view/">sunrise hot air balloon experience</a>
-          and <a href="/tours/20-minute-paragliding-transport-marrakech/">paragliding near Marrakech</a>.
+          and <a href="/tours/20-minute-paragliding-transport-marrakech/">paragliding near Marrakech</a>. You can also explore a
+          <a href="/tours/can-am-xrs-off-road-adventure-marrakech/">Can-Am XRS buggy adventure</a>
+          or a <a href="/tours/motocross-off-road-adventure-marrakech/">motocross off-road experience</a>.
         </p>
         <p data-reveal="up" style="--delay: 180ms">Use the tour pages to choose an activity, then contact the team for current prices, timing, availability and practical details.</p>
         <div data-reveal="up" style="--delay: 220ms"><a class="button" href="/tours/">Discover all activities</a></div>

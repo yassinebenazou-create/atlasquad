@@ -8,7 +8,13 @@ const { tour } = Astro.props;
 
 <article class="listing-card">
   <a class="card-image" href={`/tours/${tour.slug}/`} aria-label={`View ${tour.title}`}>
-    <img src={tour.image} alt={tour.imageAlt} loading="lazy" decoding="async" />
+    <img
+      src={tour.image}
+      alt={tour.imageAlt}
+      loading="lazy"
+      decoding="async"
+      style={tour.imagePosition ? `object-position: ${tour.imagePosition}` : undefined}
+    />
   </a>
   <div class="card-body">
     <h2><a href={`/tours/${tour.slug}/`}>{tour.title}</a></h2>
@@ -16,8 +22,8 @@ const { tour } = Astro.props;
       <span><Clock3 size={12} strokeWidth={2.2} aria-hidden="true" />{tour.duration}</span>
       <span><Users size={12} strokeWidth={2.2} aria-hidden="true" />{tour.audience}</span>
     </div>
-    <div class="card-stars" aria-label={`${tour.rating} out of 5 stars`}>
-      {Array.from({ length: tour.rating }).map(() => <Star size={12} strokeWidth={1.8} fill="currentColor" aria-hidden="true" />)}
+    <div class="card-stars" aria-label={tour.rating ? `${tour.rating} out of 5 stars` : undefined} aria-hidden={tour.rating ? undefined : 'true'}>
+      {tour.rating ? Array.from({ length: tour.rating }).map(() => <Star size={12} strokeWidth={1.8} fill="currentColor" aria-hidden="true" />) : null}
     </div>
     <div class="card-footer">
       <p><span>From</span><strong>{tour.priceLabel}</strong></p>
@@ -83,7 +89,7 @@ const { tour } = Astro.props;
 
   .card-meta {
     display: grid;
-    grid-template-columns: minmax(0, .75fr) minmax(0, 1.25fr);
+    grid-template-columns: max-content minmax(0, 1fr);
     gap: 10px;
     margin-top: 10px;
     color: #717989;
@@ -96,7 +102,7 @@ const { tour } = Astro.props;
     align-items: center;
     gap: 7px;
     min-width: 0;
-    white-space: nowrap;
+    white-space: normal;
   }
 
   .card-meta svg {
@@ -107,6 +113,7 @@ const { tour } = Astro.props;
   }
 
   .card-stars {
+    min-height: 15px;
     display: flex;
     gap: 2px;
     margin-top: 9px;
