@@ -1,6 +1,7 @@
 ---
 type HeroSlide = {
   src: string;
+  mobileSrc?: string;
   label: string;
   position?: string;
   mobilePosition?: string;
@@ -32,6 +33,8 @@ const firstSlide = slides[0];
   <img
     class="hero-slide is-active is-front"
     src={firstSlide.src}
+    srcset={firstSlide.mobileSrc ? `${firstSlide.mobileSrc} 768w, ${firstSlide.src} 1920w` : undefined}
+    sizes="100vw"
     alt=""
     width="3000"
     height="2000"
@@ -69,6 +72,7 @@ const firstSlide = slides[0];
 <script>
   type SliderImage = {
     src: string;
+    mobileSrc?: string;
     label: string;
     position?: string;
     mobilePosition?: string;
@@ -111,6 +115,8 @@ const firstSlide = slides[0];
         slot.onerror = () => {
           if (slotVersions[slotIndex] === version) resolve(false);
         };
+        slot.srcset = slide.mobileSrc ? `${slide.mobileSrc} 768w, ${slide.src} 1920w` : '';
+        slot.sizes = '100vw';
         slot.src = slide.src;
         slot.dataset.slideIndex = String(index);
         slot.style.setProperty('--slide-position', slide.position ?? 'center');
@@ -128,10 +134,10 @@ const firstSlide = slides[0];
       });
     };
 
-    const schedule = () => {
+    const schedule = (delay = interval) => {
       window.clearTimeout(timer);
       if (reducedMotion.matches || document.hidden) return;
-      timer = window.setTimeout(() => void showSlide((currentIndex + 1) % slides.length), interval);
+      timer = window.setTimeout(() => void showSlide((currentIndex + 1) % slides.length), delay);
     };
 
     const showSlide = async (nextIndex: number, userInitiated = false) => {
@@ -206,12 +212,8 @@ const firstSlide = slides[0];
     });
 
     reducedMotion.addEventListener('change', schedule);
-    window.addEventListener('load', () => {
-      window.setTimeout(() => {
-        if (!document.hidden && !reducedMotion.matches) void prepareSlot(1, 1);
-      }, 600);
-    }, { once: true });
-    schedule();
+    // Keep the initial LCP image stable during startup; subsequent slides retain the 5.5s cadence.
+    schedule(12000);
   };
 
   document.querySelectorAll<HTMLElement>('[data-home-hero-slider]').forEach(setupHeroSlider);

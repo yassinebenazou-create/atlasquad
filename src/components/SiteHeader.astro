@@ -15,7 +15,7 @@ const current = Astro.url.pathname;
 <header class="site-header">
   <div class="nav-shell">
     <a class="brand" href="/" aria-label="Atlas Quad Palmeraie home">
-      <span class="logo-frame"><img src={site.logo} alt="Atlas Quad Palmeraie logo" decoding="async" /></span>
+      <span class="logo-frame"><img src={site.logo} alt="Atlas Quad Palmeraie logo" width="320" height="256" decoding="async" /></span>
     </a>
     <nav class="desktop-nav" aria-label="Primary navigation">
       {nav.map((item) => <a class:list={{ active: current === item.href || (item.href === '/tours/' && current.startsWith('/tours')) }} href={item.href}>{item.label}</a>)}

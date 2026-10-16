@@ -3,7 +3,7 @@ import { ExternalLink } from '@lucide/astro';
 import { googleBusiness } from '../data/contact';
 ---
 
-<section class="google-reviews" aria-labelledby="reviews-heading">
+<section class="google-reviews" aria-labelledby="reviews-heading" data-google-reviews>
   <div class="reviews-inner">
     <div class="reviews-header">
       <div>
@@ -24,13 +24,38 @@ import { googleBusiness } from '../data/contact';
   </div>
 </section>
 
-<script is:inline src="https://widgets.sociablekit.com/google-reviews/widget.js" defer></script>
+<script>
+  const reviews = document.querySelector<HTMLElement>('[data-google-reviews]');
+  let reviewsScriptLoaded = false;
+
+  const loadReviewsWidget = () => {
+    if (reviewsScriptLoaded) return;
+    reviewsScriptLoaded = true;
+    const script = document.createElement('script');
+    script.src = 'https://widgets.sociablekit.com/google-reviews/widget.js';
+    script.async = true;
+    document.body.append(script);
+  };
+
+  if (reviews && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      observer.disconnect();
+      loadReviewsWidget();
+    }, { rootMargin: '500px 0px' });
+    observer.observe(reviews);
+  } else {
+    window.addEventListener('load', loadReviewsWidget, { once: true });
+  }
+</script>
 
 <style>
   .google-reviews {
     width: 100%;
     padding: 30px 0 34px;
     background: #faf8f5;
+    content-visibility: auto;
+    contain-intrinsic-size: auto 320px;
   }
 
   .reviews-inner {

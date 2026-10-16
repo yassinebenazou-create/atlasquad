@@ -4,13 +4,18 @@ import type { TourListingItem } from '../data/tours';
 
 type Props = { tour: TourListingItem };
 const { tour } = Astro.props;
+const compactImage = tour.image.replace('-card.webp', '-card-480.webp');
 ---
 
 <article class="listing-card">
   <a class="card-image" href={`/tours/${tour.slug}/`} aria-label={`View ${tour.title}`}>
     <img
       src={tour.image}
+      srcset={`${compactImage} 480w, ${tour.image} 960w`}
+      sizes="(max-width: 639px) calc(100vw - 32px), (max-width: 1199px) 50vw, 33vw"
       alt={tour.imageAlt}
+      width="960"
+      height="540"
       loading="lazy"
       decoding="async"
       style={tour.imagePosition ? `object-position: ${tour.imagePosition}` : undefined}

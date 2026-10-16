@@ -46,7 +46,10 @@ const galleryId = `gallery-title-${tour.slug}`;
         <img
           src={image}
           alt={galleryItems[index].alt}
-          loading={index === 0 ? 'eager' : 'lazy'}
+          width="1600"
+          height="1067"
+          loading="lazy"
+          fetchpriority="low"
           decoding="async"
         />
       </button>

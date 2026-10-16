@@ -5,10 +5,21 @@ import type { Tour } from '../data/tours';
 type Props = { tour: Tour };
 const { tour } = Astro.props;
 const rating = tour.rating ?? 5;
+const mobileHeroImage = tour.heroImage.replace('.webp', '-768.webp');
 ---
 
 <section class="tour-hero" aria-labelledby="tour-title">
-  <img src={tour.heroImage} alt={tour.imageAlt} fetchpriority="high" decoding="async" data-hero-image />
+  <img
+    src={tour.heroImage}
+    srcset={`${mobileHeroImage} 768w, ${tour.heroImage} 1920w`}
+    sizes="100vw"
+    alt={tour.imageAlt}
+    width="1920"
+    height="1080"
+    fetchpriority="high"
+    decoding="async"
+    data-hero-image
+  />
   <div class="tour-hero-shade" aria-hidden="true"></div>
   <div class="tour-hero-content">
     <nav aria-label="Breadcrumb" data-reveal="left" style="--delay: 80ms">

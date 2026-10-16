@@ -5,4 +5,7 @@ import { defineConfig } from 'astro/config';
 export default defineConfig({
   site: 'https://atlasquad.com',
   output: 'static',
+  build: {
+    inlineStylesheets: 'always',
+  },
 });

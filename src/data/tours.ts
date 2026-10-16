@@ -67,9 +67,9 @@ export const contact = {
 export const site = {
   name: 'Atlas Quad Palmeraie',
   origin: 'https://atlasquad.com',
-  logo: '/images/logo.png',
+  logo: '/images/logo-optimized.webp',
   heroImage: '/images/hero/hero-quad-sunset.jpg',
-  aboutImage: '/images/marrakech-sunset.jpg',
+  aboutImage: '/images/marrakech-sunset-optimized.webp',
   socialProfiles: [
     'https://www.facebook.com/share/1JqPmPaaei/',
     'https://www.instagram.com/atlas_quad_palmeraie',
@@ -79,15 +79,15 @@ export const site = {
 const extraTourGallery = {
   quad1Hour: Array.from(
     { length: 10 },
-    (_, index) => `/images/tours/tour-extra-images/quad-1hour/quad-1hour-extra-${String(index + 1).padStart(2, '0')}.jpeg`,
+    (_, index) => `/images/tours/tour-extra-images/quad-1hour/quad-1hour-extra-${String(index + 1).padStart(2, '0')}.webp`,
   ),
   quad2Hours: Array.from(
     { length: 10 },
-    (_, index) => `/images/tours/tour-extra-images/quad-2hours/quad-2hours-extra-${String(index + 1).padStart(2, '0')}.jpeg`,
+    (_, index) => `/images/tours/tour-extra-images/quad-2hours/quad-2hours-extra-${String(index + 1).padStart(2, '0')}.webp`,
   ),
   quadCamel: Array.from(
     { length: 9 },
-    (_, index) => `/images/tours/tour-extra-images/quad-camel/quad-camel-extra-${String(index + 1).padStart(2, '0')}.jpeg`,
+    (_, index) => `/images/tours/tour-extra-images/quad-camel/quad-camel-extra-${String(index + 1).padStart(2, '0')}.webp`,
   ),
 };
 
@@ -132,7 +132,7 @@ const extraTourGalleryAlts = {
 export const featuredDeals: FeaturedDeal[] = [
   {
     title: '1 Hour Quad Bike Activity in Marrakech Palmeraie',
-    image: '/images/tours/quad-palmeraie.jpg',
+    image: '/images/tours/quad-palmeraie-card.webp',
     imageAlt: 'Quad bike activity among the palm groves of Marrakech Palmeraie',
     duration: '1 Hour',
     audience: 'All Levels',
@@ -142,7 +142,7 @@ export const featuredDeals: FeaturedDeal[] = [
   },
   {
     title: 'Quad Bike & Camel Ride in Marrakech Palmeraie',
-    image: '/images/tours/quad-camel-main.jpg',
+    image: '/images/tours/quad-camel-card.webp',
     imageAlt: 'Quad bike and camel ride activity in Marrakech Palmeraie',
     duration: '2 Hours',
     audience: 'Couples & Groups',
@@ -151,7 +151,7 @@ export const featuredDeals: FeaturedDeal[] = [
   },
   {
     title: 'Hot Air Balloon Experience in Marrakech',
-    image: '/images/tours/hot-air-balloon-marrakech.jpg',
+    image: '/images/tours/hot-air-balloon-marrakech-card.webp',
     imageAlt: 'Hot air balloon flight over Marrakech at sunrise',
     duration: '3 Hours',
     audience: 'Includes Transport',
@@ -164,7 +164,7 @@ export const tourListings: TourListingItem[] = [
   {
     slug: '1-hour-quad-bike-marrakech-palmeraie',
     title: '1 Hour Quad Bike Activity in Marrakech Palmeraie',
-    image: '/images/tours/quad-palmeraie.jpg',
+    image: '/images/tours/quad-palmeraie-card.webp',
     imageAlt: 'Quad bike riders crossing the palm grove trails of Marrakech Palmeraie',
     duration: '1 Hour',
     audience: 'All Levels',
@@ -177,7 +177,7 @@ export const tourListings: TourListingItem[] = [
   {
     slug: 'quad-bike-camel-ride-marrakech-palmeraie',
     title: 'Marrakech: 2-Hour Quad Bike & Camel Ride in Palmeraie',
-    image: '/images/tours/quad-camel-main.jpg',
+    image: '/images/tours/quad-camel-card.webp',
     imageAlt: 'Quad bike riders and camels in Marrakech Palmeraie',
     duration: '2 Hours',
     audience: 'Couples & Groups',
@@ -190,7 +190,7 @@ export const tourListings: TourListingItem[] = [
   {
     slug: 'hot-air-balloon-marrakech-sunrise-atlas-view',
     title: 'Hot Air Balloon Marrakech - Sunrise Flight & Atlas Mountains view',
-    image: '/images/tours/hot-air-balloon-marrakech.jpg',
+    image: '/images/tours/hot-air-balloon-marrakech-card.webp',
     imageAlt: 'Hot air balloon flight over Marrakech at sunrise',
     duration: '20 Minutes',
     audience: 'Includes Transport',
@@ -203,7 +203,7 @@ export const tourListings: TourListingItem[] = [
   {
     slug: 'camel-ride-palm-grove-marrakech',
     title: 'Marrakech : 1-Hour Camel Ride Through the Palm Grove',
-    image: '/images/tours/camel-ride-main.jpg',
+    image: '/images/tours/camel-ride-card.webp',
     imageAlt: 'Camel riders travelling through the Marrakech palm grove at sunset',
     duration: '1 Hour',
     audience: 'All Levels',
@@ -216,7 +216,7 @@ export const tourListings: TourListingItem[] = [
   {
     slug: 'palm-grove-2-hours-quad-bike-tour',
     title: 'Marrakech: Palm Grove 2 Hours Quad Bike Tour',
-    image: '/images/tours/quad-2hours-main.jpg',
+    image: '/images/tours/quad-2hours-card.webp',
     imageAlt: 'A group riding quad bikes through Marrakech Palmeraie',
     duration: '2 Hours',
     audience: 'All Levels',
@@ -229,7 +229,7 @@ export const tourListings: TourListingItem[] = [
   {
     slug: '20-minute-paragliding-transport-marrakech',
     title: '20 Minute Paragliding + Transport',
-    image: '/images/tours/paragliding-main.jpg',
+    image: '/images/tours/paragliding-card.webp',
     imageAlt: 'Tandem paragliding flight above the landscape near Marrakech',
     duration: '20 Minutes',
     audience: 'Includes Transport',
@@ -242,7 +242,7 @@ export const tourListings: TourListingItem[] = [
   {
     slug: 'can-am-xrs-off-road-adventure-marrakech',
     title: 'Marrakech Can-Am XRS Off-Road Adventure',
-    image: '/images/tours/can-am-xrs-buggy-tour-marrakech.webp',
+    image: '/images/tours/can-am-xrs-buggy-tour-marrakech-card.webp',
     imageAlt: 'Can-Am XRS buggy off-road adventure tour in Marrakech, Morocco.',
     duration: 'To be confirmed',
     audience: 'Contact for details',
@@ -254,7 +254,7 @@ export const tourListings: TourListingItem[] = [
   {
     slug: 'motocross-off-road-adventure-marrakech',
     title: 'Marrakech Motocross Off-Road Adventure',
-    image: '/images/tours/motocross-adventure-tour-marrakech.webp',
+    image: '/images/tours/motocross-adventure-tour-marrakech-card.webp',
     imageAlt: 'Motocross off-road adventure experience in Marrakech, Morocco.',
     imagePosition: 'center 24%',
     duration: 'To be confirmed',
@@ -279,13 +279,13 @@ export const tours: Tour[] = [
     activityTypes: ['Quad Bike'],
     audience: 'All levels',
     priceLabel: '\u20AC15.00',
-    heroImage: '/images/tours/quad-1hour-hero.jpg',
-    cardImage: '/images/tours/quad-palmeraie.jpg',
+    heroImage: '/images/tours/quad-1hour-hero.webp',
+    cardImage: '/images/tours/quad-palmeraie-card.webp',
     gallery: [
-      '/images/tours/quad-1hour-gallery-1.jpg',
-      '/images/tours/quad-1hour-gallery-2.jpg',
-      '/images/tours/quad-1hour-gallery-3.jpg',
-      '/images/tours/quad-1hour-gallery-4.jpg',
+      '/images/tours/quad-1hour-gallery-1.webp',
+      '/images/tours/quad-1hour-gallery-2.webp',
+      '/images/tours/quad-1hour-gallery-3.webp',
+      '/images/tours/quad-1hour-gallery-4.webp',
       ...extraTourGallery.quad1Hour,
     ],
     galleryAlts: [
@@ -363,13 +363,13 @@ export const tours: Tour[] = [
     activityTypes: ['Quad Bike', 'Camel Ride'],
     audience: 'Couples & groups',
     priceLabel: 'Contact for price',
-    heroImage: '/images/tours/quad-camel-main.jpg',
-    cardImage: '/images/tours/quad-camel-main.jpg',
+    heroImage: '/images/tours/quad-camel-main.webp',
+    cardImage: '/images/tours/quad-camel-card.webp',
     gallery: [
-      '/images/tours/quad-camel-main.jpg',
-      '/images/tours/quad-camel-gallery-2.jpg',
-      '/images/tours/quad-camel-gallery-3.jpg',
-      '/images/tours/quad-camel-gallery-4.jpg',
+      '/images/tours/quad-camel-main.webp',
+      '/images/tours/quad-camel-gallery-2.webp',
+      '/images/tours/quad-camel-gallery-3.webp',
+      '/images/tours/quad-camel-gallery-4.webp',
       ...extraTourGallery.quadCamel,
     ],
     galleryAlts: [
@@ -437,13 +437,13 @@ export const tours: Tour[] = [
     activityTypes: ['Hot Air Balloon'],
     audience: 'Includes transport',
     priceLabel: '\u20AC80.00',
-    heroImage: '/images/tours/hot-air-balloon-marrakech.jpg',
-    cardImage: '/images/tours/hot-air-balloon-marrakech.jpg',
+    heroImage: '/images/tours/hot-air-balloon-marrakech.webp',
+    cardImage: '/images/tours/hot-air-balloon-marrakech-card.webp',
     gallery: [
-      '/images/tours/hot-air-balloon-marrakech.jpg',
-      '/images/tours/hot-air-balloon-gallery-1.jpg',
-      '/images/tours/hot-air-balloon-gallery-2.jpg',
-      '/images/tours/hot-air-balloon-gallery-3.jpg',
+      '/images/tours/hot-air-balloon-marrakech.webp',
+      '/images/tours/hot-air-balloon-gallery-1.webp',
+      '/images/tours/hot-air-balloon-gallery-2.webp',
+      '/images/tours/hot-air-balloon-gallery-3.webp',
     ],
     galleryAlts: [
       'Hot air balloon flight over Marrakech at sunrise',
@@ -509,13 +509,13 @@ export const tours: Tour[] = [
     activityTypes: ['Camel Ride'],
     audience: 'All levels',
     priceLabel: 'Contact for price',
-    heroImage: '/images/tours/camel-ride-main.jpg',
-    cardImage: '/images/tours/camel-ride-main.jpg',
+    heroImage: '/images/tours/camel-ride-main.webp',
+    cardImage: '/images/tours/camel-ride-card.webp',
     gallery: [
-      '/images/tours/camel-ride-main.jpg',
-      '/images/tours/camel-ride-gallery-1.jpg',
-      '/images/tours/camel-ride-gallery-2.jpg',
-      '/images/tours/camel-ride-gallery-3.jpg',
+      '/images/tours/camel-ride-main.webp',
+      '/images/tours/camel-ride-gallery-1.webp',
+      '/images/tours/camel-ride-gallery-2.webp',
+      '/images/tours/camel-ride-gallery-3.webp',
     ],
     galleryAlts: [
       'Camel ride through Marrakech Palmeraie',
@@ -581,13 +581,13 @@ export const tours: Tour[] = [
     activityTypes: ['Quad Bike'],
     audience: 'All levels',
     priceLabel: 'Contact for price',
-    heroImage: '/images/tours/quad-2hours-main.jpg',
-    cardImage: '/images/tours/quad-2hours-main.jpg',
+    heroImage: '/images/tours/quad-2hours-main.webp',
+    cardImage: '/images/tours/quad-2hours-card.webp',
     gallery: [
-      '/images/tours/quad-2hours-main.jpg',
-      '/images/tours/quad-2hours-gallery-1.jpg',
-      '/images/tours/quad-2hours-gallery-2.jpg',
-      '/images/tours/quad-2hours-gallery-3.jpg',
+      '/images/tours/quad-2hours-main.webp',
+      '/images/tours/quad-2hours-gallery-1.webp',
+      '/images/tours/quad-2hours-gallery-2.webp',
+      '/images/tours/quad-2hours-gallery-3.webp',
       ...extraTourGallery.quad2Hours,
     ],
     galleryAlts: [
@@ -655,13 +655,13 @@ export const tours: Tour[] = [
     activityTypes: ['Paragliding'],
     audience: 'Includes transport',
     priceLabel: 'Contact for price',
-    heroImage: '/images/tours/paragliding-main.jpg',
-    cardImage: '/images/tours/paragliding-main.jpg',
+    heroImage: '/images/tours/paragliding-main.webp',
+    cardImage: '/images/tours/paragliding-card.webp',
     gallery: [
-      '/images/tours/paragliding-main.jpg',
-      '/images/tours/paragliding-gallery-1.jpg',
-      '/images/tours/paragliding-gallery-2.jpg',
-      '/images/tours/paragliding-gallery-3.jpg',
+      '/images/tours/paragliding-main.webp',
+      '/images/tours/paragliding-gallery-1.webp',
+      '/images/tours/paragliding-gallery-2.webp',
+      '/images/tours/paragliding-gallery-3.webp',
     ],
     galleryAlts: [
       'Paragliding over Marrakech landscape',
@@ -728,7 +728,7 @@ export const tours: Tour[] = [
     audience: 'Contact for details',
     priceLabel: '\u20AC130.00',
     heroImage: '/images/tours/can-am-xrs-buggy-tour-marrakech.webp',
-    cardImage: '/images/tours/can-am-xrs-buggy-tour-marrakech.webp',
+    cardImage: '/images/tours/can-am-xrs-buggy-tour-marrakech-card.webp',
     gallery: [
       '/images/tours/can-am-xrs-buggy-tour-marrakech.webp',
       '/images/tours/can-am-maverick-desert-adventure.webp',
@@ -802,7 +802,7 @@ export const tours: Tour[] = [
     audience: 'Contact for details',
     priceLabel: '\u20AC80.00',
     heroImage: '/images/tours/motocross-adventure-tour-marrakech.webp',
-    cardImage: '/images/tours/motocross-adventure-tour-marrakech.webp',
+    cardImage: '/images/tours/motocross-adventure-tour-marrakech-card.webp',
     gallery: [
       '/images/tours/motocross-adventure-tour-marrakech.webp',
       '/images/tours/motocross-desert-adventure.webp',

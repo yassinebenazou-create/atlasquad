@@ -8,25 +8,29 @@ import { contact, site } from '../data/tours';
 
 const heroSlides = [
   {
-    src: '/images/hero/hero-quad-sunset.jpg',
+    src: '/images/hero/hero-quad-sunset-1920.webp',
+    mobileSrc: '/images/hero/hero-quad-sunset-768.webp',
     label: 'Quad riders crossing sunlit desert dunes',
     position: 'center 58%',
     mobilePosition: '50% center',
   },
   {
-    src: '/images/hero/hero-quad-palmeraie.jpg',
+    src: '/images/hero/hero-quad-palmeraie-1920.webp',
+    mobileSrc: '/images/hero/hero-quad-palmeraie-768.webp',
     label: 'Quad bike overlooking Marrakech Palmeraie at sunset',
     position: 'center',
     mobilePosition: '68% center',
   },
   {
-    src: '/images/hero/hero-quad-action.jpg',
+    src: '/images/hero/hero-quad-action-1920.webp',
+    mobileSrc: '/images/hero/hero-quad-action-768.webp',
     label: 'Quad bikes ready for a Marrakech desert adventure',
     position: 'center 64%',
     mobilePosition: '64% center',
   },
   {
-    src: '/images/hero/hero-marrakech-adventure.jpg',
+    src: '/images/hero/hero-marrakech-adventure-1920.webp',
+    mobileSrc: '/images/hero/hero-marrakech-adventure-768.webp',
     label: 'Marrakech mountain landscape and village',
     position: 'center',
     mobilePosition: '34% center',
@@ -81,7 +85,7 @@ const structuredData = [
 
   <section id="about" class="section about">
     <div class="container about-grid">
-      <div class="about-media" data-reveal="scale"><img src={site.aboutImage} alt="Marrakech city and the Koutoubia Mosque at sunset" loading="lazy" decoding="async" /></div>
+      <div class="about-media" data-reveal="scale"><img src={site.aboutImage} alt="Marrakech city and the Koutoubia Mosque at sunset" width="1200" height="900" loading="lazy" decoding="async" /></div>
       <div class="about-copy">
         <p class="eyebrow" data-reveal="left">Atlas Quad Palmeraie</p>
         <h2 class="display" data-reveal="up" style="--delay: 80ms">See another side of <strong>Marrakech</strong></h2>
@@ -113,7 +117,7 @@ const structuredData = [
   .hero-actions { display: flex; flex-wrap: wrap; gap: .8rem; }
   .hero-actions .button { min-width: 190px; min-height: 3.2rem; padding-inline: 1.8rem; }
   .hero-actions .secondary { background: rgba(8,12,12,.28); }
-  .about { background: #fff; }
+  .about { content-visibility: auto; contain-intrinsic-size: auto 650px; background: #fff; }
   .about-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: clamp(2rem,6vw,6rem); align-items: center; }
   .about-media { height: 520px; border-radius: 10px; }
   .about-media img { width: 100%; height: 100%; object-fit: cover; object-position: center; border-radius: 10px; display: block; }
