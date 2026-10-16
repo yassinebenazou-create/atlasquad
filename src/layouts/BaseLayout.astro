@@ -13,6 +13,7 @@ type Props = {
   pathname?: string;
   image?: string;
   imageAlt?: string;
+  robots?: string;
   structuredData?: Array<Record<string, unknown>>;
 };
 
@@ -22,6 +23,7 @@ const {
   pathname = Astro.url.pathname,
   image = site.heroImage,
   imageAlt = `${site.name} outdoor activities in Marrakech`,
+  robots = 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1',
   structuredData = [],
 } = Astro.props;
 const canonical = new URL(pathname, site.origin).toString();
@@ -74,7 +76,7 @@ const schema = {
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
+    <meta name="robots" content={robots} />
     <meta name="theme-color" content="#071b46" />
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/png" sizes="96x96" href={favicon96} />

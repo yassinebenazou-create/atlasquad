@@ -1,0 +1,67 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Page Not Found | Atlas Quad Palmeraie"
+  description="The requested Atlas Quad Palmeraie page could not be found."
+  pathname="/404.html"
+  robots="noindex,follow"
+>
+  <main class="not-found">
+    <div class="not-found__content">
+      <p class="eyebrow">Page not found</p>
+      <h1 class="display">This trail ends <strong>here</strong></h1>
+      <p>The page you requested does not exist. Explore our Marrakech activities or return to the homepage.</p>
+      <div class="not-found__actions">
+        <a class="button" href="/tours/">Explore tours</a>
+        <a class="button secondary" href="/">Return home</a>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .not-found {
+    min-height: 62vh;
+    display: grid;
+    place-items: center;
+    padding: clamp(4rem, 10vw, 8rem) 1rem;
+    background: #fffaf4;
+    text-align: center;
+  }
+
+  .not-found__content {
+    width: min(100%, 760px);
+  }
+
+  .not-found .eyebrow {
+    justify-content: center;
+  }
+
+  .not-found .display {
+    margin-top: 1.25rem;
+  }
+
+  .not-found p:not(.eyebrow) {
+    max-width: 620px;
+    margin: 1.5rem auto 0;
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    line-height: 1.7;
+  }
+
+  .not-found__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.8rem;
+    margin-top: 2rem;
+  }
+
+  .not-found .button.secondary {
+    color: var(--ink);
+    border-color: rgba(7, 27, 63, 0.24);
+    background: #fff;
+  }
+</style>
