@@ -56,6 +56,9 @@ const { tour } = Astro.props;
         `Date: ${data.get('date')}`,
         `Guests: ${data.get('guests')}`,
       ].join('\n');
+      window.dispatchEvent(new CustomEvent('atlas:whatsapp-booking', {
+        detail: { activity: form.dataset.tour },
+      }));
       window.open(`${form.dataset.whatsapp}?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
     });
   });

@@ -1,0 +1,251 @@
+---
+const pixelId = '3635018123332529';
+---
+
+<section
+  class="cookie-consent"
+  data-meta-consent
+  data-pixel-id={pixelId}
+  role="dialog"
+  aria-labelledby="cookie-consent-title"
+  aria-describedby="cookie-consent-description"
+  aria-live="polite"
+  hidden
+>
+  <div class="cookie-consent__copy">
+    <h2 id="cookie-consent-title">Advertising cookies</h2>
+    <p id="cookie-consent-description">
+      Allow Meta Pixel to measure visits and WhatsApp booking enquiries from Facebook and Instagram ads.
+    </p>
+  </div>
+  <div class="cookie-consent__actions">
+    <button type="button" class="cookie-consent__decline" data-meta-consent-decline>Decline</button>
+    <button type="button" class="cookie-consent__accept" data-meta-consent-accept>Allow</button>
+  </div>
+</section>
+
+<script>
+  type MetaPixelFunction = ((...args: unknown[]) => void) & {
+    callMethod?: (...args: unknown[]) => void;
+    queue: unknown[][];
+    push: MetaPixelFunction;
+    loaded: boolean;
+    version: string;
+  };
+
+  declare global {
+    interface Window {
+      fbq?: MetaPixelFunction;
+      _fbq?: MetaPixelFunction;
+    }
+  }
+
+  type AdvertisingConsent = 'granted' | 'denied' | null;
+
+  const consentRoot = document.querySelector<HTMLElement>('[data-meta-consent]');
+  const acceptButton = consentRoot?.querySelector<HTMLButtonElement>('[data-meta-consent-accept]');
+  const declineButton = consentRoot?.querySelector<HTMLButtonElement>('[data-meta-consent-decline]');
+  const settingsButtons = document.querySelectorAll<HTMLButtonElement>('[data-cookie-settings]');
+  const pixelId = consentRoot?.dataset.pixelId;
+  const storageKey = 'atlasquad:advertising-consent';
+  let consentState: AdvertisingConsent = readConsent();
+  let pixelInitialized = false;
+
+  function readConsent(): AdvertisingConsent {
+    try {
+      const stored = window.localStorage.getItem(storageKey);
+      return stored === 'granted' || stored === 'denied' ? stored : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function saveConsent(value: Exclude<AdvertisingConsent, null>) {
+    try {
+      window.localStorage.setItem(storageKey, value);
+    } catch {
+      // Consent still applies for the current page when storage is unavailable.
+    }
+  }
+
+  function createPixelQueue() {
+    if (window.fbq) return window.fbq;
+
+    const fbq = function (...args: unknown[]) {
+      if (fbq.callMethod) fbq.callMethod(...args);
+      else fbq.queue.push(args);
+    } as MetaPixelFunction;
+
+    fbq.push = fbq;
+    fbq.loaded = true;
+    fbq.version = '2.0';
+    fbq.queue = [];
+    window.fbq = fbq;
+    window._fbq = fbq;
+
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = 'https://connect.facebook.net/en_US/fbevents.js';
+    document.head.appendChild(script);
+
+    return fbq;
+  }
+
+  function initializePixel() {
+    if (pixelInitialized || consentState !== 'granted' || !pixelId) return;
+
+    const fbq = createPixelQueue();
+    fbq('consent', 'grant');
+    fbq('init', pixelId);
+    fbq('track', 'PageView');
+    pixelInitialized = true;
+  }
+
+  function clearMetaCookies() {
+    const host = window.location.hostname;
+    const domains = ['', host, `.${host}`];
+    ['_fbp', '_fbc'].forEach((name) => {
+      domains.forEach((domain) => {
+        const domainAttribute = domain ? `; domain=${domain}` : '';
+        document.cookie = `${name}=; Max-Age=0; path=/${domainAttribute}; SameSite=Lax`;
+      });
+    });
+  }
+
+  function showConsent(moveFocus = false) {
+    if (!consentRoot) return;
+    consentRoot.hidden = false;
+    if (moveFocus) acceptButton?.focus({ preventScroll: true });
+  }
+
+  function hideConsent() {
+    if (consentRoot) consentRoot.hidden = true;
+  }
+
+  function setConsent(value: Exclude<AdvertisingConsent, null>) {
+    consentState = value;
+    saveConsent(value);
+    hideConsent();
+
+    if (value === 'granted') {
+      initializePixel();
+      return;
+    }
+
+    window.fbq?.('consent', 'revoke');
+    clearMetaCookies();
+  }
+
+  acceptButton?.addEventListener('click', () => setConsent('granted'));
+  declineButton?.addEventListener('click', () => setConsent('denied'));
+  settingsButtons.forEach((button) => button.addEventListener('click', () => showConsent(true)));
+
+  window.addEventListener('atlas:whatsapp-booking', (event) => {
+    if (consentState !== 'granted') return;
+
+    const activity = event instanceof CustomEvent && typeof event.detail?.activity === 'string'
+      ? event.detail.activity
+      : 'Tour availability enquiry';
+
+    initializePixel();
+    window.fbq?.('track', 'Contact', {
+      content_name: activity,
+      content_category: 'Tour',
+      contact_method: 'WhatsApp',
+    });
+  });
+
+  if (consentState === 'granted') initializePixel();
+  else if (consentState === null) showConsent();
+</script>
+
+<style>
+  .cookie-consent {
+    position: fixed;
+    left: 18px;
+    bottom: 18px;
+    z-index: 95;
+    width: min(calc(100% - 36px), 440px);
+    padding: 17px;
+    border: 1px solid rgba(7, 27, 63, 0.12);
+    border-radius: 8px;
+    background: #fff;
+    color: #071b3f;
+    box-shadow: 0 16px 42px rgba(7, 27, 63, 0.2);
+  }
+
+  .cookie-consent[hidden] {
+    display: none;
+  }
+
+  .cookie-consent h2 {
+    margin: 0;
+    font-family: inherit;
+    font-size: 16px;
+    line-height: 1.25;
+  }
+
+  .cookie-consent p {
+    margin: 6px 0 0;
+    color: #566176;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .cookie-consent__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .cookie-consent button {
+    min-height: 40px;
+    padding: 8px 16px;
+    border: 1px solid #d7dce4;
+    border-radius: 6px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+  }
+
+  .cookie-consent button:hover,
+  .cookie-consent button:focus-visible {
+    transform: translateY(-1px);
+  }
+
+  .cookie-consent__decline {
+    background: #fff;
+    color: #071b3f;
+  }
+
+  .cookie-consent__decline:hover,
+  .cookie-consent__decline:focus-visible {
+    border-color: #071b3f;
+  }
+
+  .cookie-consent__accept {
+    border-color: #cc4400 !important;
+    background: #cc4400;
+    color: #fff;
+  }
+
+  .cookie-consent__accept:hover,
+  .cookie-consent__accept:focus-visible {
+    background: #b83b00;
+  }
+
+  @media (max-width: 580px) {
+    .cookie-consent {
+      left: 12px;
+      bottom: 84px;
+      width: calc(100% - 24px);
+      padding: 15px;
+    }
+
+    .cookie-consent__actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

@@ -76,6 +76,7 @@ const socialIcons = [
       <div class="contact-links">
         <a href={contact.phoneHref}><Phone size={16} fill="currentColor" strokeWidth={0} /><span>{contact.phone}</span></a>
         <a href={contact.emailHref}><Mail size={17} strokeWidth={2} /><span>{contact.email}</span></a>
+        <button type="button" class="cookie-settings" data-cookie-settings>Cookie settings</button>
       </div>
     </div>
   </div>
@@ -277,7 +278,8 @@ const socialIcons = [
     gap: 28px;
   }
 
-  .contact-links a {
+  .contact-links a,
+  .cookie-settings {
     display: inline-flex;
     align-items: center;
     gap: 10px;
@@ -286,8 +288,18 @@ const socialIcons = [
     transition: color 180ms ease;
   }
 
+  .cookie-settings {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
   .contact-links a:hover,
-  .contact-links a:focus-visible {
+  .contact-links a:focus-visible,
+  .cookie-settings:hover,
+  .cookie-settings:focus-visible {
     color: #ff6b20;
   }
 
